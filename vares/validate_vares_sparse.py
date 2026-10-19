@@ -34,9 +34,9 @@ VAL_ROOT = ROOT + "_sparseval"
 
 def operators(h, X, Xs, elements, setup, free, chen, label):
     import scipy.linalg as sla
-    kw = dict(linear_material=False, vary_detJ=chen.VARY_DETJ, sigma_star_all=setup["sigma_star_all"])
+    kw = dict(linear_material=False, vary_detJ=S.VARY_DETJ, sigma_star_all=setup["sigma_star_all"])
     t = time.time()
-    Rd, Kd = chen.assemble_residual_tangent(X, Xs, elements, None, setup["detJ_ref_all"], **kw)
+    Rd, Kd = VM.assemble_residual_tangent(X, Xs, elements, None, setup["detJ_ref_all"], **kw)
     t_ad = time.time() - t
     t = time.time()
     Rs, Ks = VS.assemble_residual_tangent_sparse(X, Xs, elements, None, setup["detJ_ref_all"], **kw)
@@ -71,7 +71,8 @@ def operators(h, X, Xs, elements, setup, free, chen, label):
 
 
 def part1():
-    import optimise_cutting_pattern_npl_gore_chen as chen
+    import vares_settings as S
+    import vares_membrane as VM
     res = []
     for h in (70.7, 25.0):
         d = os.path.join(ROOT, MS.tag(h))
@@ -83,7 +84,7 @@ def part1():
             res.append(operators(h, X, Xs, elements, s, s["free"], chen, lab))
     # 12.5 mm, sparse only: prolongation seed of the converged h025 pattern, targets as the worker builds them
     from vares_membrane import build_phys_targets_field
-    import optimise_cutting_pattern_paraboloid_gore_chen as stage3
+    import vares_setup as stage3
     prof = CK.load_profile(TARGET)[0]
     nm, _ = CK.load_nested(TARGET, GRADING, 12.5)
     Xl = nm["X_leaf"]
@@ -92,7 +93,7 @@ def part1():
     pinned = stage3.build_pin_dof_set_geom(X0, [int(i) for i in nm["boundary_ids"]])
     free = np.asarray([q for q in range(2 * X0.shape[0]) if q not in pinned])
     sig, dref = build_phys_targets_field(X0, nm["X_spatial"], elements, prof.sigma_field)
-    kw = dict(linear_material=False, vary_detJ=chen.VARY_DETJ, sigma_star_all=sig)
+    kw = dict(linear_material=False, vary_detJ=S.VARY_DETJ, sigma_star_all=sig)
     t = time.time()
     R, K = VS.assemble_residual_tangent_sparse(X0, nm["X_spatial"], elements, None, dref, **kw)
     t_a = time.time() - t
@@ -104,7 +105,7 @@ def part1():
     e = VS.min_eig_sym(Kf)
     t_e = time.time() - t
     t = time.time()
-    chen.assemble_residual(X0, nm["X_spatial"], elements, None, dref, **kw)
+    VM.assemble_residual(X0, nm["X_spatial"], elements, None, dref, **kw)
     t_r = time.time() - t
     o = dict(rung="h012", at="seed " + desc, n_dof_free=int(len(free)), nnz=int(Kf.nnz), R_norm=float(np.linalg.norm(R[free])),
              t_assemble_sparse_s=t_a, t_residual_only_s=t_r, t_solve_sparse_s=t_s, min_eig_sparse=e, t_eig_sparse_s=t_e,
@@ -116,7 +117,7 @@ def part1():
 
 
 def part2():
-    import optimise_cutting_pattern_paraboloid_gore_chen as stage3
+    import vares_setup as stage3
     prof = CK.load_profile(TARGET)[0]
     res = []
     for tag in sorted(os.listdir(VAL_ROOT)):
@@ -148,18 +149,19 @@ def part2():
 
 def part_parallel(procs=4):
     """ParallelAssembler vs the serial loops on h071 and h025 (seed + converged): must be bit-identical."""
-    import optimise_cutting_pattern_npl_gore_chen as chen
+    import vares_settings as S
+    import vares_membrane as VM
     res = []
     for h in (70.7, 25.0):
         d = os.path.join(ROOT, MS.tag(h))
         s, p = np.load(os.path.join(d, "setup.npz")), np.load(os.path.join(d, "pattern.npz"))
         el = [t for t in np.asarray(p["elements"])]
-        kw = dict(linear_material=False, vary_detJ=chen.VARY_DETJ, sigma_star_all=s["sigma_star_all"])
+        kw = dict(linear_material=False, vary_detJ=S.VARY_DETJ, sigma_star_all=s["sigma_star_all"])
         PA = VS.ParallelAssembler(procs, p["X_spatial"], el, None, s["detJ_ref_all"], **kw)
         for X, lab in ((s["X_initial"], "seed"), (p["X_converged"], "converged")):
             t = time.time(); Rs, Ks = VS.assemble_residual_tangent_sparse(X, p["X_spatial"], el, None, s["detJ_ref_all"], **kw); ts = time.time() - t
             t = time.time(); Rp, Kp = PA.residual_tangent(X); tp = time.time() - t
-            t = time.time(); r_s = chen.assemble_residual(X, p["X_spatial"], el, None, s["detJ_ref_all"], **kw); trs = time.time() - t
+            t = time.time(); r_s = VM.assemble_residual(X, p["X_spatial"], el, None, s["detJ_ref_all"], **kw); trs = time.time() - t
             t = time.time(); r_p = PA.residual(X); trp = time.time() - t
             o = dict(rung=MS.tag(h), at=lab, procs=procs, R_tangent_identical=bool(np.array_equal(Rs, Rp)),
                      K_identical=bool(np.array_equal(Ks.indptr, Kp.indptr) and np.array_equal(Ks.indices, Kp.indices)

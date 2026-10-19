@@ -2,7 +2,7 @@ r"""MeshStudy_paraboloid_vares_ckpt.py -- checkpointed, resumable worker for fur
 paraboloid VaReS mesh study (MeshStudy_paraboloid_vares.py).
 
 Same setup as MeshStudy_paraboloid_vares.run_one (same imports in the same order, same mesher,
-seed, pins, targets) and the same Newton loop as chen.run_inner_loop, copied line for line
+seed, pins, targets) and the same Newton loop as S.run_inner_loop, copied line for line
 except that:
   * the full loop state (X, lam, stall, n_indef, R_history, k) is written atomically after
     EVERY iteration (ckpt.npz via tmp + os.replace, previous kept as ckpt_prev.npz), and
@@ -251,7 +251,7 @@ def mesh_kw(grading):
 
 
 # graded-ladder seed: "uniform" (converged uniform rung, P1-sampled) or "lsq" (lsq_edge flattening, as
-# every uniform rung started).  MESHSTUDY_LAM_INIT overrides chen.LAM_INIT (initial Levenberg damping;
+# every uniform rung started).  MESHSTUDY_LAM_INIT overrides S.LAM_INIT (initial Levenberg damping;
 # a solver start setting, not a tolerance).  Both apply only to a rung's first start and are saved.
 GRADED_SEED = os.environ.get("MESHSTUDY_GRADED_SEED", "uniform")
 # MESHSTUDY_GRADED_SEED_FROM=<h> (2026-10-10, fallback for the graded 12.5 rung): seed from the CONVERGED graded
@@ -259,7 +259,7 @@ GRADED_SEED = os.environ.get("MESHSTUDY_GRADED_SEED", "uniform")
 # of SEED_FROM (user-approved 2026-10-05 for the uniform 12.5 <- 17.7 retry).  First start only; saved as seed_from.
 GRADED_SEED_FROM = os.environ.get("MESHSTUDY_GRADED_SEED_FROM")
 LAM_INIT_ENV = os.environ.get("MESHSTUDY_LAM_INIT")
-# Graded rungs start at lambda 1, not chen.LAM_INIT (1e-3): from the resampled uniform seed the
+# Graded rungs start at lambda 1, not S.LAM_INIT (1e-3): from the resampled uniform seed the
 # undamped first step (146 mm at 70.7 mm) folded the pole element and Newton stalled (indefinite
 # tangent, no descent); with lambda_init 1 the 70.7 mm graded rung converged in 16 its to 1.7e-8,
 # tangent positive definite throughout, no inverted element (test 2026-10-08).
@@ -479,14 +479,15 @@ def main():
 
     # same imports, same order as MS.run_one
     import paraboloid_profile as pp                 # noqa: F401 (import order as run_one)
-    import optimise_cutting_pattern_npl_gore_chen as chen
-    import optimise_cutting_pattern_paraboloid_gore_chen as stage3
+    import vares_settings as S
+    import vares_membrane as VM
+    import vares_setup as stage3
     from vares_membrane import build_phys_targets_field
-    from flatten_semicylinder_validation import least_squares_edge_flatten
-    from bilinear_quad_lib import apply_step_mesh
+    from vares_flatten import least_squares_edge_flatten
+    from vares_membrane import apply_step_mesh
     import scipy.linalg as sla
 
-    chen.NEWTON_MAX_IT = MS.MAX_IT
+    S.NEWTON_MAX_IT = MS.MAX_IT
     prof, D, meta = load_profile(a.target)
     print(f"[rung {h}] target {a.target}", flush=True)
     print(f"[rung {h}] grading {a.grading} {GRADINGS[a.grading]}", flush=True)
@@ -574,7 +575,7 @@ def main():
               f"||R|| {R_history[-1]:.4e}, lam {lam:.3e}", flush=True)
     else:
         X = X_initial.copy()
-        lam = lam_init(a.grading) or chen.LAM_INIT
+        lam = lam_init(a.grading) or S.LAM_INIT
         print(f"[rung {h}] lambda_init {lam:g}", flush=True)
         stall = 0
         n_indef = 0
@@ -582,14 +583,14 @@ def main():
         k0 = 0
         wall_prev = 0.0
         print(f"[rung {h}] {len(els)} tris, {X_spatial.shape[0]} nodes, {len(free)} free dofs;"
-              f" tol {chen.NEWTON_TOL_R:g}, max_it {chen.NEWTON_MAX_IT}, threads {threads}, solver {SOLVER}"
+              f" tol {S.NEWTON_TOL_R:g}, max_it {S.NEWTON_MAX_IT}, threads {threads}, solver {SOLVER}"
               + (f" (refine {VS.REFINE})" if SPARSE else ""),
               flush=True)
 
     t0 = time.time()
     N_g = 2 * X.shape[0]
     free_ix = np.ix_(free, free)
-    kw = dict(linear_material=False, vary_detJ=chen.VARY_DETJ, sigma_star_all=sigma_star_all)
+    kw = dict(linear_material=False, vary_detJ=S.VARY_DETJ, sigma_star_all=sigma_star_all)
     # sparse mode only: element loops on MESHSTUDY_ASSEMBLY_PROCS processes, accumulated in element order
     # (bit-identical R and K, vares_sparse.ParallelAssembler); 1 = the serial loops
     procs = int(os.environ.get("MESHSTUDY_ASSEMBLY_PROCS", "1")) if SPARSE else 1
@@ -600,14 +601,14 @@ def main():
           f"{'alpha':>6s}  {'lambda':>10s}  {'minEig(Ks)':>12s}  flag", flush=True)
     exit_reason = "max_it"
     n_this = 0
-    for k in range(k0, chen.NEWTON_MAX_IT):
+    for k in range(k0, S.NEWTON_MAX_IT):
         if SPARSE:
             R, K = (PA.residual_tangent(X) if PA is not None else
                     VS.assemble_residual_tangent_sparse(X, X_spatial, elements, None, detJ_ref_all, **kw))
             R_free = R[free]
             K_free = VS.restrict(K, free)
         else:
-            R, K = chen.assemble_residual_tangent(X, X_spatial, elements, None, detJ_ref_all, **kw)
+            R, K = VM.assemble_residual_tangent(X, X_spatial, elements, None, detJ_ref_all, **kw)
             R_free = R[free]
             K_free = K[free_ix]
         del K
@@ -626,7 +627,7 @@ def main():
         if min_eig < 0.0:
             n_indef += 1
 
-        if rn < chen.NEWTON_TOL_R:
+        if rn < S.NEWTON_TOL_R:
             print(f"  {k:>4d}  {rn:12.4e}  {'-':>10s}  {'-':>6s}  "
                   f"{'-':>10s}  {min_eig:12.3e}  converged", flush=True)
             exit_reason = "converged"
@@ -645,8 +646,8 @@ def main():
                     dX_free = sla.solve(A, -R_free, overwrite_a=True, check_finite=False)
             except np.linalg.LinAlgError:
                 A = None
-                lam = min(lam * chen.LAM_UP, chen.LAM_MAX)
-                if lam >= chen.LAM_MAX:
+                lam = min(lam * S.LAM_UP, S.LAM_MAX)
+                if lam >= S.LAM_MAX:
                     break
                 continue
             A = None
@@ -654,20 +655,20 @@ def main():
             dX = np.zeros(N_g)
             dX[free] = dX_free
             step = float(np.linalg.norm(dX))
-            if step > chen.NEWTON_MAX_STEP:
-                dX *= chen.NEWTON_MAX_STEP / step
+            if step > S.NEWTON_MAX_STEP:
+                dX *= S.NEWTON_MAX_STEP / step
 
             alpha = 1.0
             ls_ok = False
-            for _ in range(chen.LS_MAX_BT):
+            for _ in range(S.LS_MAX_BT):
                 X_trial = apply_step_mesh(X, dX, alpha)
                 try:
                     R_tr = (PA.residual(X_trial) if PA is not None else
-                            chen.assemble_residual(X_trial, X_spatial, elements, None, detJ_ref_all, **kw))
+                            VM.assemble_residual(X_trial, X_spatial, elements, None, detJ_ref_all, **kw))
                 except (ValueError, np.linalg.LinAlgError):
                     alpha *= 0.5
                     continue
-                if np.linalg.norm(R_tr[free]) <= (1.0 - chen.LS_C1 * alpha) * rn:
+                if np.linalg.norm(R_tr[free]) <= (1.0 - S.LS_C1 * alpha) * rn:
                     ls_ok = True
                     break
                 alpha *= 0.5
@@ -676,15 +677,15 @@ def main():
                 X = X_trial
                 rn_new = float(np.linalg.norm(R_tr[free]))
                 if alpha >= 1.0:
-                    lam = max(lam * chen.LAM_DOWN, chen.LAM_MIN)
+                    lam = max(lam * S.LAM_DOWN, S.LAM_MIN)
                 else:
-                    lam = min(lam * chen.LAM_UP, chen.LAM_MAX)
+                    lam = min(lam * S.LAM_UP, S.LAM_MAX)
                 stall = stall + 1 if (rn - rn_new) <= 1.0e-4 * rn else 0
                 accepted = True
                 break
             else:
-                lam = min(lam * chen.LAM_UP, chen.LAM_MAX)
-                if lam >= chen.LAM_MAX:
+                lam = min(lam * S.LAM_UP, S.LAM_MAX)
+                if lam >= S.LAM_MAX:
                     break
         del K_free
 
@@ -694,7 +695,7 @@ def main():
               f"{lam:10.3e}  {min_eig:12.3e}  {flag}   [{time.time() - t0 + wall_prev:.0f} s]",
               flush=True)
         if not accepted:
-            print(f"  no descent (lambda hit {chen.LAM_MAX:.0e}) -- exiting", flush=True)
+            print(f"  no descent (lambda hit {S.LAM_MAX:.0e}) -- exiting", flush=True)
             exit_reason = "no_descent"
             break
         # state after iteration k: everything the next iteration reads
@@ -702,8 +703,8 @@ def main():
                       R_history=np.asarray(R_history), k=k,
                       wall_s=time.time() - t0 + wall_prev, threads=threads)
         n_this += 1
-        if eff_step < chen.NEWTON_MIN_STEP:
-            print(f"  step floor (|dX|<{chen.NEWTON_MIN_STEP:.0e} mm) -- exiting", flush=True)
+        if eff_step < S.NEWTON_MIN_STEP:
+            print(f"  step floor (|dX|<{S.NEWTON_MIN_STEP:.0e} mm) -- exiting", flush=True)
             exit_reason = "step_floor"
             break
         if stall >= 4 and NO_EARLY_STALL[a.target]:
@@ -718,20 +719,20 @@ def main():
             print(f"[test] stopping after {n_this} iterations (simulated kill)", flush=True)
             sys.exit(3)
     else:
-        print(f"  reached NEWTON_MAX_IT = {chen.NEWTON_MAX_IT} "
-              f"without ||R|| < {chen.NEWTON_TOL_R}", flush=True)
+        print(f"  reached NEWTON_MAX_IT = {S.NEWTON_MAX_IT} "
+              f"without ||R|| < {S.NEWTON_TOL_R}", flush=True)
 
     # criterion (a) (user 2026-10-13): a SPARSE run that stopped on the step floor above NEWTON_TOL_R is accepted only if
     # vares_roundoff.certify proves it sits on the double-precision residual floor (tolerance itself unchanged)
     cert = None
-    if SPARSE and exit_reason == "step_floor" and not (R_history and R_history[-1] < chen.NEWTON_TOL_R):
+    if SPARSE and exit_reason == "step_floor" and not (R_history and R_history[-1] < S.NEWTON_TOL_R):
         import json as _json
         import vares_roundoff as VR
         rt = PA.residual_tangent if PA is not None else (
             lambda X_: VS.assemble_residual_tangent_sparse(X_, X_spatial, elements, None, detJ_ref_all, **kw))
         rr = PA.residual if PA is not None else (
-            lambda X_: chen.assemble_residual(X_, X_spatial, elements, None, detJ_ref_all, **kw))
-        cert = VR.certify(X, free, chen.NEWTON_TOL_R, rt, rr, apply_step_mesh)
+            lambda X_: VM.assemble_residual(X_, X_spatial, elements, None, detJ_ref_all, **kw))
+        cert = VR.certify(X, free, S.NEWTON_TOL_R, rt, rr, apply_step_mesh)
         print(f"[certify] round-off floor certificate: {_json.dumps(cert)}", flush=True)
     if PA is not None:
         PA.close()
@@ -742,10 +743,10 @@ def main():
     res_conv, S_conv, _ = stage3.phys_residual_field(X, X_spatial, elements, prof.sigma_field)
     s_cen = np.array([prof.s_of_pos(p) for p in X_spatial[els].mean(axis=1)]) \
         * prof.geom_scale
-    converged_tol = bool(R_hist[-1] < chen.NEWTON_TOL_R)
+    converged_tol = bool(R_hist[-1] < S.NEWTON_TOL_R)
     converged = converged_tol or bool(cert and cert["ok"])
     crit = "tol" if converged_tol else ("roundoff_floor" if converged else "none")
-    capped = (not converged) and len(R_hist) >= chen.NEWTON_MAX_IT
+    capped = (not converged) and len(R_hist) >= S.NEWTON_MAX_IT
     np.savez(
         out,
         X_initial=X_initial, X_converged=X, X_spatial=X_spatial, X_leaf=X_leaf,
@@ -753,7 +754,7 @@ def main():
         R_history=np.asarray(R_hist, float), n_indef=n_indef,
         res_init=res_init, res_conv=res_conv, S_init=S_init, S_conv=S_conv, T=T,
         s_cen=s_cen, gmsh_mesh_size=h, converged=converged, capped=capped,
-        newton_tol=chen.NEWTON_TOL_R, newton_max_it=chen.NEWTON_MAX_IT, wall_s=wall,
+        newton_tol=S.NEWTON_TOL_R, newton_max_it=S.NEWTON_MAX_IT, wall_s=wall,
         geom_scale=prof.geom_scale, s_mid_mm=0.5 * (prof.s_lo + prof.s_hi) * prof.geom_scale,
         s_lo_mm=prof.s_lo * prof.geom_scale, s_hi_mm=prof.s_hi * prof.geom_scale,
         n_gores=CFG.N_GORES, trim_dish=CFG.TRIM_DISH if a.target == "linearfit" else 0.0,
@@ -764,7 +765,7 @@ def main():
         grading=a.grading, tip_grade=np.asarray(GRADINGS[a.grading] or (np.nan, np.nan), float),
         graded_seed=(seed_desc if seed_desc is not None else GRADED_SEED if a.grading != "none" else ""),
         **nest,
-        lam_init=lam_init(a.grading) or chen.LAM_INIT,
+        lam_init=lam_init(a.grading) or S.LAM_INIT,
         no_early_stall=NO_EARLY_STALL[a.target],
         form_npz=CFG.FORM_NPZ if a.target == "linearfit" else meta.get("state_npz", ""),
         target=a.target, raw_gore=meta.get("raw_gore", -1),

@@ -89,7 +89,7 @@ def size_vs_tip(Xl, T, Xs):
 
 
 def build():
-    import optimise_cutting_pattern_paraboloid_gore_chen as stage3
+    import vares_setup as stage3
     prof = CK.load_profile(TARGET)[0]
     ng = CK.CFG.N_GORES
     hb = GS._boundary_fn(prof, ng)

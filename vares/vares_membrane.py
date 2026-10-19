@@ -77,7 +77,7 @@ from __future__ import annotations
 import numpy as np
 
 from element_types import ElementType, QUAD4, element_type_of, elem_dof_ids
-from single_bilinear_quad_covariant import N as _quad_N
+from element_types import quad_N as _quad_N
 from chen2022_constitutive import chen_stress, chen_stress_linear
 from vares_kinematics import (
     IPKinematics, bundle_at, d2E_tensor_pair, fibre_contra, dfibre_contra,
@@ -501,3 +501,17 @@ def element_centre_phys_residual(X_mat: np.ndarray, X_sp: np.ndarray,
     S = element_centre_physical_stress(X_mat, X_sp, elements,
                                        linear_material=linear_material)
     return np.sqrt(((S - sigma_target) ** 2 * w).sum(axis=1))
+
+
+def apply_step_mesh(X_mat: np.ndarray, dX_flat: np.ndarray,
+                    alpha: float = 1.0) -> np.ndarray:
+    """X_mat += alpha * dX_flat (the z column stays untouched).
+
+    dX_flat has length 2 N_nodes and the same (x_0, y_0, x_1, y_1, ...)
+    layout as the assembled gradient.
+    """
+    out = X_mat.copy()
+    N_nodes = X_mat.shape[0]
+    dX_xy = dX_flat.reshape(N_nodes, 2)
+    out[:, :2] += alpha * dX_xy
+    return out

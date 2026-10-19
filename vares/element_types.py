@@ -38,8 +38,78 @@ from typing import Callable, Sequence, Tuple
 
 import numpy as np
 
-from single_bilinear_quad_covariant import dN as _quad_dN
-from bilinear_quad_lib import GAUSS_PTS_5, GAUSS_WTS_5
+
+# ============================================================
+# Bilinear quad (QUAD4): shape functions, integration points
+# ============================================================
+
+def quad_N(xi: float, eta: float) -> np.ndarray:
+    """Shape functions N_1..N_4 at parametric point (xi, eta)."""
+    return 0.25 * np.array([
+        (1 - xi) * (1 - eta),       # N_1 -- corner (-1, -1)
+        (1 + xi) * (1 - eta),       # N_2 -- corner (+1, -1)
+        (1 + xi) * (1 + eta),       # N_3 -- corner (+1, +1)
+        (1 - xi) * (1 + eta),       # N_4 -- corner (-1, +1)
+    ])
+
+
+def quad_dN(xi: float, eta: float) -> np.ndarray:
+    """Shape-function derivatives w.r.t. (xi, eta).
+
+    Returns a (4, 2) array where dN[k, 0] = dN_k/dxi and
+    dN[k, 1] = dN_k/deta. For a bilinear quad these are LINEAR in
+    (xi, eta) -- not constant as they are for a linear triangle.
+    """
+    return 0.25 * np.array([
+        [-(1 - eta), -(1 - xi)],    # node 1
+        [ (1 - eta), -(1 + xi)],    # node 2
+        [ (1 + eta),  (1 + xi)],    # node 3
+        [-(1 + eta),  (1 - xi)],    # node 4
+    ])
+
+
+# Integration points of the bilinear quad: the 2x2 Gauss points plus the centre.
+_GAUSS_G = 1.0 / np.sqrt(3.0)
+GAUSS_PTS_5 = [(-_GAUSS_G, -_GAUSS_G), ( _GAUSS_G, -_GAUSS_G),
+               ( _GAUSS_G,  _GAUSS_G), (-_GAUSS_G,  _GAUSS_G),
+               ( 0.0,       0.0      )]
+GAUSS_WTS_5 = [1.0, 1.0, 1.0, 1.0, 1.0]
+
+_quad_dN = quad_dN
+
+
+# ============================================================
+# Covariant / contravariant metric of a surface element
+# ============================================================
+
+def covariant_metric(G_1: np.ndarray, G_2: np.ndarray) -> np.ndarray:
+    """Return the 2x2 covariant metric tensor G_ij."""
+    return np.array([[G_1 @ G_1, G_1 @ G_2],
+                     [G_2 @ G_1, G_2 @ G_2]])
+
+
+def contravariant_basis(G_1: np.ndarray, G_2: np.ndarray):
+    """Return (G^1, G^2, G_ij, G^ij).
+
+    Raises ValueError if the covariant metric G_ij is (near-)singular,
+    i.e. if G_1 and G_2 are linearly dependent. This corresponds to
+    the same geometric pathology covariant_basis already rejects, but
+    it can also surface independently if you ever call this function
+    on hand-supplied G_1, G_2 vectors.
+    """
+    M_lower = np.stack([G_1, G_2])                  # (2, 3)
+    G_ij = M_lower @ M_lower.T                      # (2, 2) covariant
+    det = float(np.linalg.det(G_ij))
+    if det < 1.0e-20:
+        raise ValueError(
+            f"Covariant metric is singular (det G_ij = {det:.3e}); "
+            "G_1 and G_2 are linearly dependent so a dual basis "
+            "doesn't exist. Inspect the input X_nodes for degenerate "
+            "geometry (collinear / duplicated nodes).")
+    G_up_ij = np.linalg.inv(G_ij)                   # (2, 2) contravariant
+    M_upper = G_up_ij @ M_lower                     # (2, 3)
+    return M_upper[0], M_upper[1], G_ij, G_up_ij
+
 
 
 # ============================================================

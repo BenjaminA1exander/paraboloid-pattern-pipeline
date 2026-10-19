@@ -20,7 +20,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt                                   # noqa: E402
 from matplotlib.lines import Line2D                               # noqa: E402
 import MeshStudy_paraboloid_vares_ckpt as CK                      # noqa: E402
-import optimise_cutting_pattern_npl_gore_chen as chen             # noqa: E402
+import vares_settings as S
+import vares_membrane as VM
 import vares_sparse as VS                                         # noqa: E402
 
 TAG = os.environ.get("TANGENT_RUNG", "h200")
@@ -35,7 +36,7 @@ def main():
     s = np.load(os.path.join(root, TAG, "setup.npz"), allow_pickle=True)
     Xs, els = d["X_spatial"], [t for t in d["elements"]]
     free, dJ = s["free"], list(s["detJ_ref_all"])
-    kw = dict(linear_material=False, vary_detJ=chen.VARY_DETJ, sigma_star_all=list(s["sigma_star_all"]))
+    kw = dict(linear_material=False, vary_detJ=S.VARY_DETJ, sigma_star_all=list(s["sigma_star_all"]))
     rng = np.random.default_rng(0)
     res = {}
     for state, X in (("initial guess", d["X_initial"].copy()), ("converged", d["X_converged"].copy())):
@@ -52,8 +53,8 @@ def main():
                 Xp, Xm = X.copy(), X.copy()
                 Xp[:, :2] += eps * v.reshape(-1, 2)
                 Xm[:, :2] -= eps * v.reshape(-1, 2)
-                fd = (chen.assemble_residual(Xp, Xs, els, None, dJ, **kw)[free]
-                      - chen.assemble_residual(Xm, Xs, els, None, dJ, **kw)[free]) / (2 * eps)
+                fd = (VM.assemble_residual(Xp, Xs, els, None, dJ, **kw)[free]
+                      - VM.assemble_residual(Xm, Xs, els, None, dJ, **kw)[free]) / (2 * eps)
                 e.append(np.linalg.norm(Kv - fd) / np.linalg.norm(Kv))
             rows.append(e)
             print("%-14s ||r|| %.2e  e(eps) %s  min %.1e" % (state, np.linalg.norm(R[free]), np.array2string(np.array(e), precision=1), min(e)))

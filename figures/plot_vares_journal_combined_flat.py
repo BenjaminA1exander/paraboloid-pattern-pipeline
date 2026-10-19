@@ -317,7 +317,7 @@ def deviation_graded():
         assert np.array_equal(s["elements"], T)
         Xs = s["X_lsq"]
     else:
-        from flatten_semicylinder_validation import least_squares_edge_flatten   # the solver's own seed call
+        from vares_flatten import least_squares_edge_flatten   # the solver's own seed call
         Xs = least_squares_edge_flatten(a["X_spatial"], T, init_2d=a["X_leaf"][:, :2],
                                         anchor_to=a["X_leaf"][:, :2])[:, :2]
         np.savez(sp, X_lsq=Xs, elements=T, note="lsq_edge seed of the graded 12.5 mm mesh "

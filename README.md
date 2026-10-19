@@ -83,7 +83,8 @@ Figure 7 and Table 3: `figures/plot_paraboloid_journal_ff_best.py`; the table va
 | linear algebra | `vares_sparse.py`: sparse assembly (bit-identical to the dense path), SuperLU solve with two refinement passes, parallel element assembly; `vares_roundoff.py`: the round-off-floor certificate of a rung whose residual cannot reach the tolerance in double precision |
 | target and gore | `paraboloid_profile_cst.py` (target stress from the form-found net, raw gore 0), `formfound_profile.py` and `paraboloid_profile.py` (meridian, gore lune, developed leaf, gmsh gore mesher), `gore_subdivision.py` and `build_gore_nested_ladder.py` (nested tip-graded gore meshes) |
 | driver | `MeshStudy_paraboloid_vares_ckpt.py`: the checkpointed, resumable worker for one rung (seed by prolongation of the parent pattern, geometric 3-dof pin, Levenberg-damped Newton to ||R|| < 1e-7 N/mm); `vares_nested_chain.py` runs a chain parent -> child; `certify_vares_rung.py` applies the certificate afterwards; `validate_vares_sparse.py` and `plot_vares_tangent_check.py` are the A/B checks of the sparse path and of the tangent |
-| legacy | `optimise_cutting_pattern_npl_gore_chen.py`, `optimise_cutting_pattern_paraboloid_gore_chen.py`, `flatten_semicylinder_validation.py`, `npl_profile.py`, `bilinear_quad_lib.py`, `single_bilinear_quad_covariant.py`: the earlier airship-envelope implementation from which the worker still takes its solver constants, the pin set, the least-squares flattening seed and the quad shape functions |
+| seeds and set-up | `vares_settings.py` (Newton tolerance, budget, Levenberg schedule, line search), `vares_flatten.py` (least-squares edge-length flattening of the gore, the seed of a base rung), `vares_setup.py` (the geometric 3-dof pin, element-centre targets, residual field) |
+| earlier code | `legacy/`: the airship-envelope implementation these modules were consolidated from; not imported by the pipeline (only the dense loop of `MeshStudy_paraboloid_vares.run_one` still uses it) |
 
 Figure 8 and Table 4: `figures/plot_vares_journal_combined_flat.py` and
 `figures/table4_vares_convergence.py` (`data/results/convergence_loglog/conv_table.json`).
@@ -146,7 +147,10 @@ Euler). `docs/RECIPES.md` says where each lives and how it was produced.
 ## State of the code
 
 This repository is the organised, path-independent copy of the scripts that produced the
-published results; the numerical code is unchanged. The VaReS worker still draws its solver
-constants, pin rule and flattening seed from the earlier airship-envelope modules listed
-under "legacy"; consolidating those into the `vares_*` modules is the next clean-up step and
-is protected by the regression test above and by `validate_vares_sparse.py`.
+published results. The numerical code is unchanged: the VaReS core (`element_types.py`,
+`element_kinematics.py`, `vares_kinematics.py`, `vares_membrane.py`, `vares_sparse.py`,
+`vares_roundoff.py`) now also carries the shape functions, metrics, solver constants, pin
+rule and flattening seed that the worker used to import from the earlier airship-envelope
+modules (now in `vares/legacy/`, unused by the pipeline). The consolidation is protected
+by the regression test above (same 11 Newton iterations, converged pattern identical to
+round-off) and by `vares/validate_vares_sparse.py`.

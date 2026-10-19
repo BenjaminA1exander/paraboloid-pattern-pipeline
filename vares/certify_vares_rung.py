@@ -29,8 +29,9 @@ def main():
     import MeshStudy_paraboloid_vares as MS
     import vares_sparse as VS
     import vares_roundoff as VR
-    import optimise_cutting_pattern_npl_gore_chen as chen
-    from bilinear_quad_lib import apply_step_mesh
+    import vares_settings as S
+    import vares_membrane as VM
+    from vares_membrane import apply_step_mesh
     d = os.path.join(CK.study_root(a.target, a.grading), MS.tag(a.rung))
     p = os.path.join(d, "pattern.npz")
     pat = dict(np.load(p, allow_pickle=True))
@@ -39,7 +40,7 @@ def main():
     s = np.load(os.path.join(d, "setup.npz"))
     els = [t for t in np.asarray(pat["elements"])]
     Xs = pat["X_spatial"]
-    kw = dict(linear_material=False, vary_detJ=chen.VARY_DETJ, sigma_star_all=s["sigma_star_all"])
+    kw = dict(linear_material=False, vary_detJ=S.VARY_DETJ, sigma_star_all=s["sigma_star_all"])
     PA = VS.ParallelAssembler(a.procs, Xs, els, None, s["detJ_ref_all"], **kw)
     try:
         cert = VR.certify(pat["X_converged"], s["free"], float(pat["newton_tol"]), PA.residual_tangent, PA.residual,

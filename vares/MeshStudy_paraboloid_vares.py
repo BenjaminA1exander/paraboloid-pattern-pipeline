@@ -100,10 +100,11 @@ def rung_npz(h):
 
 def run_one(h):
     import paraboloid_profile as pp
+    sys.path.insert(0, os.path.join(HERE, "legacy"))     # the dense Newton loop of the earlier driver
     import optimise_cutting_pattern_npl_gore_chen as chen
-    import optimise_cutting_pattern_paraboloid_gore_chen as stage3
+    import vares_setup as stage3
     from vares_membrane import build_phys_targets_field
-    from flatten_semicylinder_validation import least_squares_edge_flatten
+    from vares_flatten import least_squares_edge_flatten
 
     chen.NEWTON_MAX_IT = MAX_IT          # budget only; NEWTON_TOL_R untouched
     prof, D, meta = pp.extract_paraboloid()

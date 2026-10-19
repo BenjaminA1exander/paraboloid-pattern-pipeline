@@ -42,8 +42,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from single_bilinear_quad_covariant import contravariant_basis
-from element_types import ElementType, QUAD4
+from element_types import ElementType, QUAD4, contravariant_basis
 from element_kinematics import (
     covariant_basis, dGi_dXa, dEij_dXa, d2Eij_dXa_dXb, dGup_i_dXa,
     strain_at, dcross_dXa,

@@ -1,0 +1,20 @@
+[rung 200.0] target cstraw
+[rung 200.0] grading tippolar210c200nest (0.01, 0.0006233318757122605)
+[rung 200.0] nested mesh ~/paraboloid-pattern-pipeline/data\gore_nested_cstraw_tippolar210c200\h200.npz (family C, level 0, h 200)
+[rung 200.0] seed: p1:tippolar210nest/h100
+[rung 200.0] lambda_init 1
+[rung 200.0] 234 tris, 164 nodes, 325 free dofs; tol 1e-07, max_it 1000, threads 2, solver sparse (refine 2)
+  iter         ||R||        |dX|   alpha      lambda    minEig(Ks)  flag
+     0    2.4895e+04   4.315e+00   1.000   3.333e-01     5.438e-03  ok   [13 s]
+     1    3.7926e+03   2.191e+00   1.000   1.111e-01     4.919e-03  ok   [25 s]
+     2    5.7593e+02   5.367e-01   1.000   3.704e-02     1.067e-02  ok   [38 s]
+     3    3.6302e+01   4.820e-01   1.000   1.235e-02     1.082e-02  ok   [51 s]
+     4    1.9873e-01   7.307e-01   1.000   4.115e-03     1.081e-02  ok   [63 s]
+     5    1.2742e-01   6.040e-01   1.000   1.372e-03     1.081e-02  ok   [75 s]
+     6    1.0934e-01   2.042e-01   1.000   4.572e-04     1.080e-02  ok   [88 s]
+     7    1.2737e-02   2.490e-02   1.000   1.524e-04     1.080e-02  ok   [101 s]
+     8    1.9015e-04   1.039e-03   1.000   5.081e-05     1.080e-02  ok   [113 s]
+     9    3.6534e-07   1.458e-05   1.000   1.694e-05     1.080e-02  ok   [125 s]
+    10    9.9702e-09           -       -           -     1.080e-02  converged
+[rung 200.0] 11 its, ||R|| 9.970e-09 -> CONVERGED (converged, 132 s)
+exit 0

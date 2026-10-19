@@ -31,10 +31,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from single_bilinear_quad_covariant import (
-    contravariant_basis, covariant_metric,
-)
-from element_types import ElementType
+from element_types import ElementType, contravariant_basis, covariant_metric
 
 
 # ============================================================
