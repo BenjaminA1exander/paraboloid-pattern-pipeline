@@ -27,6 +27,12 @@ of Eq. 27 over the free nodes): L0 2.0710e-4, L1 5.5440e-6, L2 7.4416e-7, L3 1.2
 (laptop) and `formfinding/nest4321_stage3.sbatch` (Euler). The stage-2 environment of every
 rung is in `data/paraboloid_edge_constq_nest*/run_env.txt`.
 
+Gradient path: the solver differentiates its Newton equilibrium through a Sherman-Morrison adjoint and
+cross-checks it once against the implicit adjoint of the damped Picard map; when the cosine is below 0.99 it
+falls back to the Picard adjoint. On the near-singular stage-2 states of L2 and L3 the Picard adjoint does
+not converge (jax_fdm reports the unconverged solves at exit), and on L2 the fallback made no progress in
+1000 steps. `JAXFDM_NEWTON_GRAD_FORCE=1` keeps the Sherman-Morrison adjoint; the L2 stage-3 run uses it.
+
 Drivers: `run_paraboloid_unstr_ladder.py` (stages 1-2), `run_stage3_local.py` (stage 3,
 laptop), `euler_nest_stage3.py` with `nest4321_stage3.sbatch` (stage 3, Euler), followed by
 `project_self_stress.py` and `project_self_stress_cst.py` (Eq. 28, nu = 0.3).

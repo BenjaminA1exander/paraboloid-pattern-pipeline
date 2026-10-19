@@ -117,7 +117,7 @@ N_STATIONS = int(os.environ.get("JAXFDM_N_STATIONS", "25"))
 # q parametrisation: "stations" (smooth q_m(s), q_h(s) profiles, see header) or "edge" (one free q per
 # edge, as SphereDishFanBeam_unstructured_JAXFDM / cap_A_unstr).  Per-edge q gives every node the local
 # freedom to balance the in-plane forces of an irregular net; a smooth profile cannot, so its nodes
-# slide.  "edge" is seeded with COTANGENT weights q_e = (cot a + cot b)/2 on the seed
+# slide (2026-10-01).  "edge" is seeded with COTANGENT weights q_e = (cot a + cot b)/2 on the seed
 # surface -- a uniform isotropic membrane stress, so the seed is mesh-consistent (uniform q is not:
 # a triangle net under uniform q carries sqrt3 q) and carries no knowledge of the target stress.
 Q_MODE = os.environ.get("JAXFDM_Q_MODE", "stations").strip().lower()
@@ -180,7 +180,7 @@ W_TAN = float(os.environ.get("JAXFDM_W_TAN", "0.0"))
 # NB as in the BWB there is no area FLOOR: a shrinking triangle is caught by SR (it goes sliver)
 # or by its neighbours' area cap, not directly.
 W_MESH = float(os.environ.get("JAXFDM_W_MESH", "0.0"))
-# Smooth element-QUALITY energy: with per-edge q the shape fixes only the NORMAL position
+# Smooth element-QUALITY energy (2026-10-04): with per-edge q the shape fixes only the NORMAL position
 # of the nodes; their tangential position is spare freedom.  Use it for the mesh instead of letting
 # nodes drift:  W_QUAL * [ mean (A/A_seed - 1)^2 + mean (SR - 1)^2 ]  over every triangle, A_seed the
 # triangle's own seed area (absolute, so blind neither to shrinkage nor to drift), SR the shape ratio
@@ -195,6 +195,9 @@ W_CURV = float(os.environ.get("JAXFDM_W_CURV", "0.0"))
 # On JAXFDM_RESUME_NPZ under a CHANGED objective: re-score 'best' at the resumed iterate and drop the L-BFGS
 # pairs (both belong to the old objective).  Iterate, step count and history carry on.  0 = resume as before.
 RESUME_RESET = os.environ.get("JAXFDM_RESUME_RESET", "0") == "1"
+# Keep the Sherman-Morrison (Newton) adjoint even if its one-off cross-check against the damped-Picard adjoint
+# fails (see _newton_grad_checked).  0 = previous behaviour (fall back to the damped gradient).
+NEWTON_GRAD_FORCE = os.environ.get("JAXFDM_NEWTON_GRAD_FORCE", "0") == "1"
 MESH_CAP_A = float(os.environ.get("JAXFDM_MESH_CAP_A", "2.5"))
 MESH_CAP_S = float(os.environ.get("JAXFDM_MESH_CAP_S", "2.0"))
 assert OBJECTIVE in ("nodal", "normal"), OBJECTIVE
@@ -1438,11 +1441,15 @@ def optimise_native_mass(topo, q_initial=None, coords_initial=None, stage_label=
                     gd = np.concatenate([np.asarray(gd_th, float), [float(gd_gk)]])
                     cos = float(gn @ gd / (np.linalg.norm(gn) * np.linalg.norm(gd) + 1e-30))
                     ok = bool(np.isfinite(cos) and cos > 0.99)
+                    # JAXFDM_NEWTON_GRAD_FORCE=1: keep the SM adjoint even when the cross-check fails.  The damped
+                    # reference is the implicit adjoint of the Picard map, whose linear solve can stop unconverged
+                    # (jax_fdm prints the tally at exit); near a nearly singular equilibrium it is the reference that
+                    # is unreliable, and falling back to it stalls the optimisation (L2 stage 3, 2026-10-19).
                     print(f"[newton grad] SM adjoint cross-check vs damped (stable seed): "
-                          f"cos={cos:.6f} {'OK' if ok else '-- FALLING BACK to damped vg'}",
+                          f"cos={cos:.6f} {'OK' if ok else ('-- cross-check FAILED, SM adjoint KEPT (JAXFDM_NEWTON_GRAD_FORCE=1)' if NEWTON_GRAD_FORCE else '-- FALLING BACK to damped vg')}",
                           flush=True)
                     _NG["verified"] = True
-                    if not ok:
+                    if not ok and not NEWTON_GRAD_FORCE:
                         _NG["ok"] = False
                         return vg(theta, log_gk, xf)
                 return (loss, xyz), (g_th, g_gk)
