@@ -20,7 +20,7 @@ WHAT DIFFERS FROM THE OLD CHAIN, AND WHY
   * Drag targets are the form-found positions themselves: gore g's node i goes to
     Rot(2 theta g) X_spatial[i] (gore 0 spans azimuth 0..2 theta).  The old interpolated fold
     reproduces exactly this for seam nodes; the two seam mates must coincide (asserted).
-  * Whole-panel drag (user decision 2026-10-05).  The old chain dragged only the edges and let the
+  * Whole-panel drag.  The old chain dragged only the edges and let the
     interior follow by inertia.  At 12.5 mm that crushes the first element row at the rim (the
     rim moves ~350 mm INTO its own panel, 2850 -> 2500 mm, and fabric has no compressive
     stiffness): LE11 -7.9 there, added mass x800, blow-up at 3.1 s even with bulk viscosity.  Now
@@ -113,7 +113,7 @@ VUMAT_STOCK = "vumat_stock.for"                       # unmodified copy (CVISC 0
 # naive's assembled state is ~half slack; with CVISC = 0 the packager rejects it ("zero or negative
 # initial dilatational modulus") because the VUMAT's start-of-step probe returns no stiffness for
 # wrinkled elements.  The stock VUMAT's start-up viscosity makes the probe positive and its prs ran
-# fine at 12.5 mm (2026-10-05), so naive's prs uses it; every other job keeps VUMAT_RUN.
+# fine at 12.5 mm, so naive's prs uses it; every other job keeps VUMAT_RUN.
 PRS_STOCK_VUMAT = ("naive",)
 LADDER_UP = (12.5, 17.7, 25.0, 35.4, 50.0, 70.7, 100.0, 141.4, 200.0)   # fine -> coarse
 # overrides for comparison runs (--dt / --alpha / --suffix); defaults reproduce the baseline
@@ -575,7 +575,7 @@ def run_queue(h, variants):
         # converged only if the rim carries the load AND nothing is still moving: on 2026-10-05
         # the vares run had RF3 100.03 % with zero drift while a ring at r ~ 0.3-0.9 R crept
         # 0.1 mm / 30 s (IE -0.4 % / 10 s) -- RF3 alone cannot see that
-        # ... nor the apex: in double precision (2026-10-06) h200 uniform/naive passed RF3 + IE drift with
+        # ... nor the apex: in double precision h200 uniform/naive passed RF3 + IE drift with
         # the apex still rising 2.2 / 4.2 mm per 30 s (little strain energy in that motion) -- so the
         # last hold frame's max node motion must be small too before the restart is thrown away
         cr = c["creep"][-1][2] if c.get("creep") else float("inf")

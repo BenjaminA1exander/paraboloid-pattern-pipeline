@@ -59,7 +59,7 @@ import gore_subdivision as GSUB                   # noqa: E402
 N_GORES, GORE = 24, 0
 TH = np.pi / N_GORES
 H0, LEVELS = 100.0, 4
-S0, G = 6.25, 0.4                                 # seam element at level 0 (user), growth rate (quality sweep)
+S0, G = 6.25, 0.4                                 # seam element at level 0, growth rate (quality sweep)
 TIP_G0, TIP_C = 0.02, 210.0                       # tip-polar grading of the current ladder
 TIP_K = 2.0 * TH / TIP_C
 DT, D1 = 20.0, TIP_G0 * H0                        # structured tip strip: extent, first row
