@@ -1,0 +1,253 @@
+{
+ "h200": {
+  "h": 200.0,
+  "n_nodes": 164,
+  "n_el": 234,
+  "h_eff": 99.16673963779303,
+  "inverted": 0,
+  "q_mean": 0.9315542244066048,
+  "q_min": 0.364149785626098,
+  "spatial_area_ratio": [
+   0.9229135317076974,
+   1.046335061144984
+  ],
+  "seam_off_curve_max_mm": 1.2569419993724296e-06,
+  "n_seam": 89,
+  "family": "C",
+  "level": 0,
+  "base_h": 200.0,
+  "tag": "h200",
+  "tip_is_node0": true,
+  "tip_element_size_mm": 1.138977541245356,
+  "size_at_d": {
+   "10": 2.0039595251387845,
+   "50": 7.52401190252596,
+   "100": 14.563816692481472,
+   "300": 33.23831159354173,
+   "1000": 104.89988793299885
+  },
+  "across_at_d": {
+   "10": 1.3064070695094885,
+   "50": 1.7396432991378448,
+   "100": 1.7971226512994771,
+   "300": 2.3573120499903,
+   "1000": 2.4352202961804146
+  },
+  "abaqus_tip_window_nodes": 1,
+  "abaqus": {
+   "tip_node": 0,
+   "rim_nodes": 5,
+   "seam_pairs": 44,
+   "plus_seam": 44,
+   "flower_nodes": 3936,
+   "flower_S3": 5616,
+   "seal_pairs": 1055,
+   "alpha_rule": 50.499561943076685
+  },
+  "vares_dense_peak_gb": 0.0024046897888183594
+ },
+ "h100": {
+  "h": 100.0,
+  "n_nodes": 561,
+  "n_el": 936,
+  "h_eff": 49.59865636233885,
+  "inverted": 0,
+  "q_mean": 0.931568514241927,
+  "q_min": 0.3641497394517881,
+  "spatial_area_ratio": [
+   0.9596959447216491,
+   1.0386971212821159
+  ],
+  "seam_off_curve_max_mm": 1.2569419993724296e-06,
+  "n_seam": 177,
+  "family": "C",
+  "level": 1,
+  "base_h": 200.0,
+  "tag": "h100",
+  "tip_is_node0": true,
+  "n_parent_nodes": 164,
+  "nested_leaf_exact": true,
+  "nested_spatial_exact": true,
+  "parent_edges_split_exact": true,
+  "tip_element_size_mm": 0.5694888011997911,
+  "size_at_d": {
+   "10": 1.019474885072662,
+   "50": 3.9000732341108755,
+   "100": 7.1832183400546405,
+   "300": 16.632005873077816,
+   "1000": 51.63892493413603
+  },
+  "across_at_d": {
+   "10": 2.567975855987459,
+   "50": 3.356115668388642,
+   "100": 3.643626523432782,
+   "300": 4.710981527947759,
+   "1000": 4.946933664620525
+  },
+  "abaqus_tip_window_nodes": 1,
+  "abaqus": {
+   "tip_node": 0,
+   "rim_nodes": 9,
+   "seam_pairs": 88,
+   "plus_seam": 88,
+   "flower_nodes": 13464,
+   "flower_S3": 22464,
+   "seal_pairs": 2111,
+   "alpha_rule": 12.625529835592374
+  },
+  "vares_dense_peak_gb": 0.02813825011253357
+ },
+ "h050": {
+  "h": 50.0,
+  "n_nodes": 2057,
+  "n_el": 3744,
+  "h_eff": 24.801239368814606,
+  "inverted": 0,
+  "q_mean": 0.9315720832414343,
+  "q_min": 0.36414967205241283,
+  "spatial_area_ratio": [
+   0.9793970025874803,
+   1.020175531642073
+  ],
+  "seam_off_curve_max_mm": 1.2569419993724296e-06,
+  "n_seam": 353,
+  "family": "C",
+  "level": 2,
+  "base_h": 200.0,
+  "tag": "h050",
+  "tip_is_node0": true,
+  "n_parent_nodes": 561,
+  "nested_leaf_exact": true,
+  "nested_spatial_exact": true,
+  "parent_edges_split_exact": true,
+  "tip_element_size_mm": 0.28474440442202664,
+  "size_at_d": {
+   "10": 0.5219933894767074,
+   "50": 1.951030263308935,
+   "100": 3.591611554884251,
+   "300": 8.314522370816611,
+   "1000": 25.349180120937984
+  },
+  "across_at_d": {
+   "10": 5.015364070561676,
+   "50": 6.7088128436632495,
+   "100": 7.287248208075046,
+   "300": 9.423640823410615,
+   "1000": 10.07742005629953
+  },
+  "abaqus_tip_window_nodes": 3,
+  "abaqus": {
+   "tip_node": 0,
+   "rim_nodes": 17,
+   "seam_pairs": 176,
+   "plus_seam": 176,
+   "flower_nodes": 49368,
+   "flower_S3": 89856,
+   "seal_pairs": 4223,
+   "alpha_rule": 3.156422399476906
+  },
+  "vares_dense_peak_gb": 0.3783031404018402
+ },
+ "h025": {
+  "h": 25.0,
+  "n_nodes": 7857,
+  "n_el": 14976,
+  "h_eff": 12.400858594419562,
+  "inverted": 0,
+  "q_mean": 0.9315729748871442,
+  "q_min": 0.3641495372536444,
+  "spatial_area_ratio": [
+   0.9886175685542921,
+   1.010304755104092
+  ],
+  "seam_off_curve_max_mm": 1.2569419993724296e-06,
+  "n_seam": 705,
+  "family": "C",
+  "level": 3,
+  "base_h": 200.0,
+  "tag": "h025",
+  "tip_is_node0": true,
+  "n_parent_nodes": 2057,
+  "nested_leaf_exact": true,
+  "nested_spatial_exact": true,
+  "parent_edges_split_exact": true,
+  "tip_element_size_mm": 0.14237220268907286,
+  "size_at_d": {
+   "10": 0.2599769386463068,
+   "50": 0.9757135098527931,
+   "100": 1.7956343123375467,
+   "300": 4.157172366383682,
+   "1000": 12.673695163156037
+  },
+  "across_at_d": {
+   "10": 10.070073539153034,
+   "50": 13.414897668924803,
+   "100": 14.575888134683764,
+   "300": 18.84768432369511,
+   "1000": 20.156263258100637
+  },
+  "abaqus_tip_window_nodes": 10,
+  "abaqus": {
+   "tip_node": 0,
+   "rim_nodes": 33,
+   "seam_pairs": 352,
+   "plus_seam": 352,
+   "flower_nodes": 188568,
+   "flower_S3": 359424,
+   "seal_pairs": 8447,
+   "alpha_rule": 0.789108095616921
+  },
+  "vares_dense_peak_gb": 5.519311040639877
+ },
+ "h012": {
+  "h": 12.5,
+  "n_nodes": 30689,
+  "n_el": 59904,
+  "h_eff": 6.200459161322518,
+  "inverted": 0,
+  "q_mean": 0.9315731976720503,
+  "q_min": 0.3641492676545605,
+  "spatial_area_ratio": [
+   0.9886175702121165,
+   1.0056790542628837
+  ],
+  "seam_off_curve_max_mm": 1.2569419993724296e-06,
+  "n_seam": 1409,
+  "family": "C",
+  "level": 4,
+  "base_h": 200.0,
+  "tag": "h012",
+  "tip_is_node0": true,
+  "n_parent_nodes": 7857,
+  "nested_leaf_exact": true,
+  "nested_spatial_exact": true,
+  "parent_edges_split_exact": true,
+  "tip_element_size_mm": 0.07118610140428498,
+  "size_at_d": {
+   "10": 0.12973642695093557,
+   "50": 0.4879043163037897,
+   "100": 0.8977833042321188,
+   "300": 2.07853744580209,
+   "1000": 6.336713411292273
+  },
+  "across_at_d": {
+   "10": 20.17927387226619,
+   "50": 26.82717994384959,
+   "100": 29.152875470120076,
+   "300": 37.69625252556007,
+   "1000": 40.31338007274561
+  },
+  "abaqus_tip_window_nodes": 36,
+  "abaqus": {
+   "tip_node": 0,
+   "rim_nodes": 65,
+   "seam_pairs": 704,
+   "plus_seam": 704,
+   "flower_nodes": 736536,
+   "flower_S3": 1437696,
+   "seal_pairs": 16895,
+   "alpha_rule": 0.1972771799038673
+  },
+  "vares_dense_peak_gb": 84.20479783415794
+ }
+}

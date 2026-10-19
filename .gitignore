@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+results/
+*.png
+!figures/**/*.png
+quad_covariant_visualisation.png
+.pytest_cache/

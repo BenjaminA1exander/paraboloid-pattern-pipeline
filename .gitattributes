@@ -1,0 +1,7 @@
+* text=auto
+*.sh text eol=lf
+*.sbatch text eol=lf
+*.for text
+*.npz binary
+*.pdf binary
+*.png binary

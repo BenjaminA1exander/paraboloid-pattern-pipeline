@@ -1,0 +1,529 @@
+================================================================
+Single bilinear quad element -- covariant analysis at centre
+Parametric point: (xi, eta) = (0.0, 0.0)
+================================================================
+
+Shape-function derivatives at centre (each row = node k):
+  dN_k/dxi  : [-0.25  0.25  0.25 -0.25]
+  dN_k/deta : [-0.25 -0.25  0.25  0.25]
+
+MATERIAL config -- flat 2x2 square in xy plane:
+  G_1 = [1. 0. 0.]    |G_1| = 1.0000
+  G_2 = [0. 1. 0.]    |G_2| = 1.0000
+  G_3 = [0. 0. 1.]    (unit normal)
+  G_ij =
+    [1. 0.]
+    [0. 1.]
+  --> G_ij = identity, so this basis IS Cartesian-orthonormal.
+  G^1 = [1. 0. 0.]      (equals G_1 here because basis is orthonormal)
+  G^2 = [0. 1. 0.]      (equals G_2)
+  Duality check G^i . G_j (should equal Kronecker delta):
+    G^1.G_1 = +1.0000     G^1.G_2 = +0.0000
+    G^2.G_1 = +0.0000     G^2.G_2 = +1.0000
+
+SPATIAL config -- stretched, tilted, non-planar:
+  g_1 = [1.5   0.    0.225]    |g_1| = 1.5168
+  g_2 = [0.    1.    0.275]    |g_2| = 1.0371
+  g_3 = [-0.14314144 -0.26242597  0.95427624]    (unit normal)
+  g_ij =
+    [2.300625 0.061875]
+    [0.061875 1.075625]
+  --> g_ij is NOT identity. Off-diagonal g_12 != 0 means the
+      basis is skewed; diagonal entries != 1 means the basis
+      is stretched relative to unit parameter steps.
+  g^1 = [ 0.65300702 -0.02504269  0.09106431]      (DIFFERS from g_1 because basis is non-orthonormal)
+  g^2 = [-0.03756403  0.93113261  0.25042686]      (DIFFERS from g_2)
+  Duality check g^i . g_j:
+    g^1.g_1 = +1.0000     g^1.g_2 = +0.0000
+    g^2.g_1 = +0.0000     g^2.g_2 = +1.0000
+
+GREEN-LAGRANGE STRAIN at centre  (E_kl = 1/2 (g_kl - G_kl)):
+  E_kl =
+    [0.6503125 0.0309375]
+    [0.0309375 0.0378125]
+  E_11 = +0.6503    (xi-direction normal strain)
+  E_22 = +0.0378    (eta-direction normal strain)
+  E_12 = +0.0309    (shear strain)
+
+  Interpretation: E_11 > 0 means the spatial element is longer
+  per unit xi than the material element -- a stretch in that
+  parameter direction. E_22, E_12 likewise.
+  These are NOT Cartesian strains; they are components in the
+  (G^k, G^l) basis. The same physical state expressed in a
+  local Cartesian frame would have different numerical values.
+
+================================================================
+VaReS validation sweep: vary X_material, hold X_spatial fixed
+================================================================
+Strain at centre  (X_spatial unchanged across all rows below)
+
+  original X_material (baseline)              E_11=+0.6503  E_22=+0.0378  E_12=+0.0309
+  spatial projected to z=0                    E_11=+0.0253  E_22=+0.0378  E_12=+0.0309
+  X_material stretched 1.5x in x              E_11=+0.0253  E_22=+0.0378  E_12=+0.0309
+  X_material scaled 0.7x                      E_11=+0.9053  E_22=+0.2928  E_12=+0.0309
+  X_material sheared (+0.6 on top)            E_11=+0.6503  E_22=-0.0072  E_12=-0.1191
+  X_material with N2 collapsed onto N1        E_11=+1.0253  E_22=-0.0872  E_12=-0.0941
+
+Observations to internalise:
+  - X_spatial never changed -- only X_material varies row to row.
+  - Strain DOES change in response. That is the VaReS variable
+    of interest: pick the X_material that minimises some
+    functional of E (energy, von Mises, target-stress match).
+  - Degenerate material meshes are rejected up front, not
+    silently producing NaN strain.
+
+Figure written: quad_covariant_visualisation.png
+[rung 25.0] target cstraw
+[rung 25.0] grading tippolar210c200nest (0.01, 0.0006233318757122605)
+[rung 25.0] nested mesh /scratch/<user>/vares/temp/gore_nested_cstraw_tippolar210c200/h025.npz (family C, level 3, h 25)
+[rung 25.0] seed: prolong:h050
+[rung 25.0] lambda_init 1
+[rung 25.0] 14976 tris, 7857 nodes, 15711 free dofs; tol 1e-07, max_it 1000, threads 1, solver sparse (refine 2)
+================================================================
+Single bilinear quad element -- covariant analysis at centre
+Parametric point: (xi, eta) = (0.0, 0.0)
+================================================================
+
+Shape-function derivatives at centre (each row = node k):
+  dN_k/dxi  : [-0.25  0.25  0.25 -0.25]
+  dN_k/deta : [-0.25 -0.25  0.25  0.25]
+
+MATERIAL config -- flat 2x2 square in xy plane:
+  G_1 = [1. 0. 0.]    |G_1| = 1.0000
+  G_2 = [0. 1. 0.]    |G_2| = 1.0000
+  G_3 = [0. 0. 1.]    (unit normal)
+  G_ij =
+    [1. 0.]
+    [0. 1.]
+  --> G_ij = identity, so this basis IS Cartesian-orthonormal.
+  G^1 = [1. 0. 0.]      (equals G_1 here because basis is orthonormal)
+  G^2 = [0. 1. 0.]      (equals G_2)
+  Duality check G^i . G_j (should equal Kronecker delta):
+    G^1.G_1 = +1.0000     G^1.G_2 = +0.0000
+    G^2.G_1 = +0.0000     G^2.G_2 = +1.0000
+
+SPATIAL config -- stretched, tilted, non-planar:
+  g_1 = [1.5   0.    0.225]    |g_1| = 1.5168
+  g_2 = [0.    1.    0.275]    |g_2| = 1.0371
+  g_3 = [-0.14314144 -0.26242597  0.95427624]    (unit normal)
+  g_ij =
+    [2.300625 0.061875]
+    [0.061875 1.075625]
+  --> g_ij is NOT identity. Off-diagonal g_12 != 0 means the
+      basis is skewed; diagonal entries != 1 means the basis
+      is stretched relative to unit parameter steps.
+  g^1 = [ 0.65300702 -0.02504269  0.09106431]      (DIFFERS from g_1 because basis is non-orthonormal)
+  g^2 = [-0.03756403  0.93113261  0.25042686]      (DIFFERS from g_2)
+  Duality check g^i . g_j:
+    g^1.g_1 = +1.0000     g^1.g_2 = +0.0000
+    g^2.g_1 = +0.0000     g^2.g_2 = +1.0000
+
+GREEN-LAGRANGE STRAIN at centre  (E_kl = 1/2 (g_kl - G_kl)):
+  E_kl =
+    [0.6503125 0.0309375]
+    [0.0309375 0.0378125]
+  E_11 = +0.6503    (xi-direction normal strain)
+  E_22 = +0.0378    (eta-direction normal strain)
+  E_12 = +0.0309    (shear strain)
+
+  Interpretation: E_11 > 0 means the spatial element is longer
+  per unit xi than the material element -- a stretch in that
+  parameter direction. E_22, E_12 likewise.
+  These are NOT Cartesian strains; they are components in the
+  (G^k, G^l) basis. The same physical state expressed in a
+  local Cartesian frame would have different numerical values.
+
+================================================================
+VaReS validation sweep: vary X_material, hold X_spatial fixed
+================================================================
+Strain at centre  (X_spatial unchanged across all rows below)
+
+  original X_material (baseline)              E_11=+0.6503  E_22=+0.0378  E_12=+0.0309
+  spatial projected to z=0                    E_11=+0.0253  E_22=+0.0378  E_12=+0.0309
+  X_material stretched 1.5x in x              E_11=+0.0253  E_22=+0.0378  E_12=+0.0309
+  X_material scaled 0.7x                      E_11=+0.9053  E_22=+0.2928  E_12=+0.0309
+  X_material sheared (+0.6 on top)            E_11=+0.6503  E_22=-0.0072  E_12=-0.1191
+  X_material with N2 collapsed onto N1        E_11=+1.0253  E_22=-0.0872  E_12=-0.0941
+
+Observations to internalise:
+  - X_spatial never changed -- only X_material varies row to row.
+  - Strain DOES change in response. That is the VaReS variable
+    of interest: pick the X_material that minimises some
+    functional of E (energy, von Mises, target-stress match).
+  - Degenerate material meshes are rejected up front, not
+    silently producing NaN strain.
+
+Figure written: quad_covariant_visualisation.png
+================================================================
+Single bilinear quad element -- covariant analysis at centre
+Parametric point: (xi, eta) = (0.0, 0.0)
+================================================================
+
+Shape-function derivatives at centre (each row = node k):
+  dN_k/dxi  : [-0.25  0.25  0.25 -0.25]
+  dN_k/deta : [-0.25 -0.25  0.25  0.25]
+
+MATERIAL config -- flat 2x2 square in xy plane:
+  G_1 = [1. 0. 0.]    |G_1| = 1.0000
+  G_2 = [0. 1. 0.]    |G_2| = 1.0000
+  G_3 = [0. 0. 1.]    (unit normal)
+  G_ij =
+    [1. 0.]
+    [0. 1.]
+  --> G_ij = identity, so this basis IS Cartesian-orthonormal.
+  G^1 = [1. 0. 0.]      (equals G_1 here because basis is orthonormal)
+  G^2 = [0. 1. 0.]      (equals G_2)
+  Duality check G^i . G_j (should equal Kronecker delta):
+    G^1.G_1 = +1.0000     G^1.G_2 = +0.0000
+    G^2.G_1 = +0.0000     G^2.G_2 = +1.0000
+
+SPATIAL config -- stretched, tilted, non-planar:
+  g_1 = [1.5   0.    0.225]    |g_1| = 1.5168
+  g_2 = [0.    1.    0.275]    |g_2| = 1.0371
+  g_3 = [-0.14314144 -0.26242597  0.95427624]    (unit normal)
+  g_ij =
+    [2.300625 0.061875]
+    [0.061875 1.075625]
+  --> g_ij is NOT identity. Off-diagonal g_12 != 0 means the
+      basis is skewed; diagonal entries != 1 means the basis
+      is stretched relative to unit parameter steps.
+  g^1 = [ 0.65300702 -0.02504269  0.09106431]      (DIFFERS from g_1 because basis is non-orthonormal)
+  g^2 = [-0.03756403  0.93113261  0.25042686]      (DIFFERS from g_2)
+  Duality check g^i . g_j:
+    g^1.g_1 = +1.0000     g^1.g_2 = +0.0000
+    g^2.g_1 = +0.0000     g^2.g_2 = +1.0000
+
+GREEN-LAGRANGE STRAIN at centre  (E_kl = 1/2 (g_kl - G_kl)):
+  E_kl =
+    [0.6503125 0.0309375]
+    [0.0309375 0.0378125]
+  E_11 = +0.6503    (xi-direction normal strain)
+  E_22 = +0.0378    (eta-direction normal strain)
+  E_12 = +0.0309    (shear strain)
+
+  Interpretation: E_11 > 0 means the spatial element is longer
+  per unit xi than the material element -- a stretch in that
+  parameter direction. E_22, E_12 likewise.
+  These are NOT Cartesian strains; they are components in the
+  (G^k, G^l) basis. The same physical state expressed in a
+  local Cartesian frame would have different numerical values.
+
+================================================================
+VaReS validation sweep: vary X_material, hold X_spatial fixed
+================================================================
+Strain at centre  (X_spatial unchanged across all rows below)
+
+  original X_material (baseline)              E_11=+0.6503  E_22=+0.0378  E_12=+0.0309
+  spatial projected to z=0                    E_11=+0.0253  E_22=+0.0378  E_12=+0.0309
+  X_material stretched 1.5x in x              E_11=+0.0253  E_22=+0.0378  E_12=+0.0309
+  X_material scaled 0.7x                      E_11=+0.9053  E_22=+0.2928  E_12=+0.0309
+  X_material sheared (+0.6 on top)            E_11=+0.6503  E_22=-0.0072  E_12=-0.1191
+  X_material with N2 collapsed onto N1        E_11=+1.0253  E_22=-0.0872  E_12=-0.0941
+
+Observations to internalise:
+  - X_spatial never changed -- only X_material varies row to row.
+  - Strain DOES change in response. That is the VaReS variable
+    of interest: pick the X_material that minimises some
+    functional of E (energy, von Mises, target-stress match).
+  - Degenerate material meshes are rejected up front, not
+    silently producing NaN strain.
+
+Figure written: quad_covariant_visualisation.png
+================================================================
+Single bilinear quad element -- covariant analysis at centre
+Parametric point: (xi, eta) = (0.0, 0.0)
+================================================================
+
+Shape-function derivatives at centre (each row = node k):
+  dN_k/dxi  : [-0.25  0.25  0.25 -0.25]
+  dN_k/deta : [-0.25 -0.25  0.25  0.25]
+
+MATERIAL config -- flat 2x2 square in xy plane:
+  G_1 = [1. 0. 0.]    |G_1| = 1.0000
+  G_2 = [0. 1. 0.]    |G_2| = 1.0000
+  G_3 = [0. 0. 1.]    (unit normal)
+  G_ij =
+    [1. 0.]
+    [0. 1.]
+  --> G_ij = identity, so this basis IS Cartesian-orthonormal.
+  G^1 = [1. 0. 0.]      (equals G_1 here because basis is orthonormal)
+  G^2 = [0. 1. 0.]      (equals G_2)
+  Duality check G^i . G_j (should equal Kronecker delta):
+    G^1.G_1 = +1.0000     G^1.G_2 = +0.0000
+    G^2.G_1 = +0.0000     G^2.G_2 = +1.0000
+
+SPATIAL config -- stretched, tilted, non-planar:
+  g_1 = [1.5   0.    0.225]    |g_1| = 1.5168
+  g_2 = [0.    1.    0.275]    |g_2| = 1.0371
+  g_3 = [-0.14314144 -0.26242597  0.95427624]    (unit normal)
+  g_ij =
+    [2.300625 0.061875]
+    [0.061875 1.075625]
+  --> g_ij is NOT identity. Off-diagonal g_12 != 0 means the
+      basis is skewed; diagonal entries != 1 means the basis
+      is stretched relative to unit parameter steps.
+  g^1 = [ 0.65300702 -0.02504269  0.09106431]      (DIFFERS from g_1 because basis is non-orthonormal)
+  g^2 = [-0.03756403  0.93113261  0.25042686]      (DIFFERS from g_2)
+  Duality check g^i . g_j:
+    g^1.g_1 = +1.0000     g^1.g_2 = +0.0000
+    g^2.g_1 = +0.0000     g^2.g_2 = +1.0000
+
+GREEN-LAGRANGE STRAIN at centre  (E_kl = 1/2 (g_kl - G_kl)):
+  E_kl =
+    [0.6503125 0.0309375]
+    [0.0309375 0.0378125]
+  E_11 = +0.6503    (xi-direction normal strain)
+  E_22 = +0.0378    (eta-direction normal strain)
+  E_12 = +0.0309    (shear strain)
+
+  Interpretation: E_11 > 0 means the spatial element is longer
+  per unit xi than the material element -- a stretch in that
+  parameter direction. E_22, E_12 likewise.
+  These are NOT Cartesian strains; they are components in the
+  (G^k, G^l) basis. The same physical state expressed in a
+  local Cartesian frame would have different numerical values.
+
+================================================================
+VaReS validation sweep: vary X_material, hold X_spatial fixed
+================================================================
+Strain at centre  (X_spatial unchanged across all rows below)
+
+  original X_material (baseline)              E_11=+0.6503  E_22=+0.0378  E_12=+0.0309
+  spatial projected to z=0                    E_11=+0.0253  E_22=+0.0378  E_12=+0.0309
+  X_material stretched 1.5x in x              E_11=+0.0253  E_22=+0.0378  E_12=+0.0309
+  X_material scaled 0.7x                      E_11=+0.9053  E_22=+0.2928  E_12=+0.0309
+  X_material sheared (+0.6 on top)            E_11=+0.6503  E_22=-0.0072  E_12=-0.1191
+  X_material with N2 collapsed onto N1        E_11=+1.0253  E_22=-0.0872  E_12=-0.0941
+
+Observations to internalise:
+  - X_spatial never changed -- only X_material varies row to row.
+  - Strain DOES change in response. That is the VaReS variable
+    of interest: pick the X_material that minimises some
+    functional of E (energy, von Mises, target-stress match).
+  - Degenerate material meshes are rejected up front, not
+    silently producing NaN strain.
+
+Figure written: quad_covariant_visualisation.png
+================================================================
+Single bilinear quad element -- covariant analysis at centre
+Parametric point: (xi, eta) = (0.0, 0.0)
+================================================================
+
+Shape-function derivatives at centre (each row = node k):
+  dN_k/dxi  : [-0.25  0.25  0.25 -0.25]
+  dN_k/deta : [-0.25 -0.25  0.25  0.25]
+
+MATERIAL config -- flat 2x2 square in xy plane:
+  G_1 = [1. 0. 0.]    |G_1| = 1.0000
+  G_2 = [0. 1. 0.]    |G_2| = 1.0000
+  G_3 = [0. 0. 1.]    (unit normal)
+  G_ij =
+    [1. 0.]
+    [0. 1.]
+  --> G_ij = identity, so this basis IS Cartesian-orthonormal.
+  G^1 = [1. 0. 0.]      (equals G_1 here because basis is orthonormal)
+  G^2 = [0. 1. 0.]      (equals G_2)
+  Duality check G^i . G_j (should equal Kronecker delta):
+    G^1.G_1 = +1.0000     G^1.G_2 = +0.0000
+    G^2.G_1 = +0.0000     G^2.G_2 = +1.0000
+
+SPATIAL config -- stretched, tilted, non-planar:
+  g_1 = [1.5   0.    0.225]    |g_1| = 1.5168
+  g_2 = [0.    1.    0.275]    |g_2| = 1.0371
+  g_3 = [-0.14314144 -0.26242597  0.95427624]    (unit normal)
+  g_ij =
+    [2.300625 0.061875]
+    [0.061875 1.075625]
+  --> g_ij is NOT identity. Off-diagonal g_12 != 0 means the
+      basis is skewed; diagonal entries != 1 means the basis
+      is stretched relative to unit parameter steps.
+  g^1 = [ 0.65300702 -0.02504269  0.09106431]      (DIFFERS from g_1 because basis is non-orthonormal)
+  g^2 = [-0.03756403  0.93113261  0.25042686]      (DIFFERS from g_2)
+  Duality check g^i . g_j:
+    g^1.g_1 = +1.0000     g^1.g_2 = +0.0000
+    g^2.g_1 = +0.0000     g^2.g_2 = +1.0000
+
+GREEN-LAGRANGE STRAIN at centre  (E_kl = 1/2 (g_kl - G_kl)):
+  E_kl =
+    [0.6503125 0.0309375]
+    [0.0309375 0.0378125]
+  E_11 = +0.6503    (xi-direction normal strain)
+  E_22 = +0.0378    (eta-direction normal strain)
+  E_12 = +0.0309    (shear strain)
+
+  Interpretation: E_11 > 0 means the spatial element is longer
+  per unit xi than the material element -- a stretch in that
+  parameter direction. E_22, E_12 likewise.
+  These are NOT Cartesian strains; they are components in the
+  (G^k, G^l) basis. The same physical state expressed in a
+  local Cartesian frame would have different numerical values.
+
+================================================================
+VaReS validation sweep: vary X_material, hold X_spatial fixed
+================================================================
+Strain at centre  (X_spatial unchanged across all rows below)
+
+  original X_material (baseline)              E_11=+0.6503  E_22=+0.0378  E_12=+0.0309
+  spatial projected to z=0                    E_11=+0.0253  E_22=+0.0378  E_12=+0.0309
+  X_material stretched 1.5x in x              E_11=+0.0253  E_22=+0.0378  E_12=+0.0309
+  X_material scaled 0.7x                      E_11=+0.9053  E_22=+0.2928  E_12=+0.0309
+  X_material sheared (+0.6 on top)            E_11=+0.6503  E_22=-0.0072  E_12=-0.1191
+  X_material with N2 collapsed onto N1        E_11=+1.0253  E_22=-0.0872  E_12=-0.0941
+
+Observations to internalise:
+  - X_spatial never changed -- only X_material varies row to row.
+  - Strain DOES change in response. That is the VaReS variable
+    of interest: pick the X_material that minimises some
+    functional of E (energy, von Mises, target-stress match).
+  - Degenerate material meshes are rejected up front, not
+    silently producing NaN strain.
+
+Figure written: quad_covariant_visualisation.png
+[rung 25.0] parallel assembly on 4 processes
+  iter         ||R||        |dX|   alpha      lambda    minEig(Ks)  flag
+     0    2.3157e+04   2.582e+00   1.000   3.333e-01    -5.543e-03  ok   [29 s]
+     1    1.1459e+03   2.160e+00   1.000   1.111e-01     1.105e-05  ok   [50 s]
+     2    1.8824e+02   9.059e-01   1.000   3.704e-02     1.216e-04  ok   [70 s]
+     3    2.8106e+01   1.990e-01   1.000   1.235e-02     1.320e-04  ok   [91 s]
+     4    1.6354e+00   8.058e-02   1.000   4.115e-03     1.331e-04  ok   [111 s]
+     5    1.4298e-02   1.571e-01   1.000   1.372e-03     1.332e-04  ok   [132 s]
+     6    1.3013e-02   1.673e-01   0.500   4.115e-03     1.332e-04  ok   [160 s]
+     7    1.0761e-02   1.152e-01   1.000   1.372e-03     1.332e-04  ok   [180 s]
+     8    2.4389e-03   7.489e-02   0.250   4.115e-03     1.332e-04  ok   [217 s]
+     9    2.2647e-03   1.046e-01   1.000   1.372e-03     1.332e-04  ok   [237 s]
+    10    1.1430e-03   3.530e-02   0.125   4.115e-03     1.332e-04  ok   [282 s]
+    11    1.0827e-03   9.917e-02   1.000   1.372e-03     1.332e-04  ok   [303 s]
+    12    7.7616e-04   3.377e-02   0.125   4.115e-03     1.332e-04  ok   [347 s]
+    13    7.4991e-04   9.473e-02   1.000   1.372e-03     1.332e-04  ok   [367 s]
+    14    6.1754e-04   3.234e-02   0.125   4.115e-03     1.332e-04  ok   [412 s]
+    15    6.0393e-04   9.066e-02   1.000   1.372e-03     1.332e-04  ok   [432 s]
+    16    5.3509e-04   3.098e-02   0.125   4.115e-03     1.332e-04  ok   [477 s]
+    17    5.2659e-04   8.682e-02   1.000   1.372e-03     1.332e-04  ok   [497 s]
+    18    4.8376e-04   2.967e-02   0.125   4.115e-03     1.332e-04  ok   [541 s]
+    19    4.7753e-04   8.316e-02   1.000   1.372e-03     1.332e-04  ok   [562 s]
+    20    4.4665e-04   2.842e-02   0.125   4.115e-03     1.332e-04  ok   [609 s]
+    21    4.4154e-04   7.965e-02   1.000   1.372e-03     1.332e-04  ok   [631 s]
+    22    4.1682e-04   2.722e-02   0.125   4.115e-03     1.332e-04  ok   [679 s]
+    23    4.1234e-04   7.629e-02   1.000   1.372e-03     1.332e-04  ok   [701 s]
+    24    3.9122e-04   2.607e-02   0.125   4.115e-03     1.331e-04  ok   [745 s]
+    25    3.8713e-04   7.308e-02   1.000   1.372e-03     1.331e-04  ok   [765 s]
+    26    3.6838e-04   2.497e-02   0.125   4.115e-03     1.331e-04  ok   [810 s]
+    27    3.6458e-04   7.000e-02   1.000   1.372e-03     1.331e-04  ok   [830 s]
+    28    3.4759e-04   2.392e-02   0.125   4.115e-03     1.331e-04  ok   [874 s]
+    29    3.4401e-04   6.705e-02   1.000   1.372e-03     1.331e-04  ok   [894 s]
+    30    3.2843e-04   2.291e-02   0.125   4.115e-03     1.331e-04  ok   [938 s]
+    31    3.2505e-04   6.422e-02   1.000   1.372e-03     1.331e-04  ok   [959 s]
+    32    3.1066e-04   2.195e-02   0.125   4.115e-03     1.331e-04  ok   [1005 s]
+    33    3.0745e-04   6.152e-02   1.000   1.372e-03     1.331e-04  ok   [1027 s]
+    34    2.9411e-04   2.102e-02   0.125   4.115e-03     1.331e-04  ok   [1072 s]
+    35    2.9107e-04   5.893e-02   1.000   1.372e-03     1.331e-04  ok   [1094 s]
+    36    2.7867e-04   2.014e-02   0.125   4.115e-03     1.331e-04  ok   [1140 s]
+    37    2.7577e-04   5.644e-02   1.000   1.372e-03     1.331e-04  ok   [1161 s]
+    38    2.6423e-04   1.929e-02   0.125   4.115e-03     1.331e-04  ok   [1206 s]
+    39    2.6147e-04   5.406e-02   1.000   1.372e-03     1.331e-04  ok   [1227 s]
+    40    2.5070e-04   1.848e-02   0.125   4.115e-03     1.331e-04  ok   [1274 s]
+    41    2.4808e-04   5.179e-02   1.000   1.372e-03     1.331e-04  ok   [1296 s]
+    42    2.3802e-04   1.770e-02   0.125   4.115e-03     1.331e-04  ok   [1342 s]
+    43    2.3552e-04   4.960e-02   1.000   1.372e-03     1.331e-04  ok   [1364 s]
+    44    2.2611e-04   1.695e-02   0.125   4.115e-03     1.331e-04  ok   [1410 s]
+    45    2.2373e-04   4.751e-02   1.000   1.372e-03     1.331e-04  ok   [1433 s]
+    46    2.1493e-04   1.624e-02   0.125   4.115e-03     1.331e-04  ok   [1479 s]
+    47    2.1265e-04   4.551e-02   1.000   1.372e-03     1.331e-04  ok   [1501 s]
+    48    2.0440e-04   1.555e-02   0.125   4.115e-03     1.331e-04  ok   [1548 s]
+    49    2.0223e-04   4.359e-02   1.000   1.372e-03     1.331e-04  ok   [1570 s]
+    50    1.9449e-04   1.490e-02   0.125   4.115e-03     1.331e-04  ok   [1617 s]
+    51    1.9241e-04   4.176e-02   1.000   1.372e-03     1.331e-04  ok   [1638 s]
+    52    1.8514e-04   1.427e-02   0.125   4.115e-03     1.331e-04  ok   [1685 s]
+    53    1.8316e-04   4.000e-02   1.000   1.372e-03     1.331e-04  ok   [1708 s]
+    54    1.7632e-04   1.367e-02   0.125   4.115e-03     1.331e-04  ok   [1755 s]
+    55    1.7444e-04   3.831e-02   1.000   1.372e-03     1.331e-04  ok   [1777 s]
+    56    1.6800e-04   1.309e-02   0.125   4.115e-03     1.331e-04  ok   [1824 s]
+    57    1.6619e-04   3.670e-02   1.000   1.372e-03     1.331e-04  ok   [1846 s]
+    58    1.6012e-04   1.254e-02   0.125   4.115e-03     1.331e-04  ok   [1891 s]
+    59    1.5840e-04   3.515e-02   1.000   1.372e-03     1.331e-04  ok   [1913 s]
+    60    1.5268e-04   1.201e-02   0.125   4.115e-03     1.331e-04  ok   [1959 s]
+    61    1.5103e-04   3.367e-02   1.000   1.372e-03     1.331e-04  ok   [1981 s]
+    62    1.4563e-04   1.151e-02   0.125   4.115e-03     1.331e-04  ok   [2028 s]
+    63    1.4405e-04   3.225e-02   1.000   1.372e-03     1.331e-04  ok   [2050 s]
+    64    1.3894e-04   1.102e-02   0.125   4.115e-03     1.331e-04  ok   [2095 s]
+    65    1.3744e-04   3.089e-02   1.000   1.372e-03     1.331e-04  ok   [2116 s]
+    66    1.3261e-04   2.112e-02   0.250   4.115e-03     1.331e-04  ok   [2154 s]
+    67    1.3252e-04   2.926e-02   1.000   1.372e-03     1.331e-04  ok   [2176 s]
+    68    1.2507e-04   2.000e-02   0.250   4.115e-03     1.331e-04  ok   [2215 s]
+    69    1.2474e-04   2.771e-02   1.000   1.372e-03     1.331e-04  ok   [2237 s]
+    70    1.1802e-04   1.894e-02   0.250   4.115e-03     1.331e-04  ok   [2275 s]
+    71    1.1748e-04   2.625e-02   1.000   1.372e-03     1.331e-04  ok   [2296 s]
+    72    1.1140e-04   1.794e-02   0.250   4.115e-03     1.331e-04  ok   [2334 s]
+    73    1.1070e-04   2.486e-02   1.000   1.372e-03     1.331e-04  ok   [2355 s]
+    74    1.0518e-04   1.699e-02   0.250   4.115e-03     1.331e-04  ok   [2394 s]
+    75    1.0436e-04   2.355e-02   1.000   1.372e-03     1.331e-04  ok   [2416 s]
+    76    9.9345e-05   1.609e-02   0.250   4.115e-03     1.331e-04  ok   [2454 s]
+    77    9.8433e-05   2.230e-02   1.000   1.372e-03     1.331e-04  ok   [2476 s]
+    78    9.3858e-05   1.524e-02   0.250   4.115e-03     1.331e-04  ok   [2513 s]
+    79    9.2877e-05   2.112e-02   1.000   1.372e-03     1.331e-04  ok   [2534 s]
+    80    8.8696e-05   1.444e-02   0.250   4.115e-03     1.331e-04  ok   [2572 s]
+    81    8.7667e-05   2.001e-02   1.000   1.372e-03     1.331e-04  ok   [2594 s]
+    82    8.3836e-05   1.367e-02   0.250   4.115e-03     1.331e-04  ok   [2633 s]
+    83    8.2776e-05   1.895e-02   1.000   1.372e-03     1.331e-04  ok   [2655 s]
+    84    7.9259e-05   1.295e-02   0.250   4.115e-03     1.331e-04  ok   [2695 s]
+    85    7.8182e-05   1.795e-02   1.000   1.372e-03     1.331e-04  ok   [2718 s]
+    86    7.4946e-05   1.227e-02   0.250   4.115e-03     1.331e-04  ok   [2757 s]
+    87    7.3863e-05   1.700e-02   1.000   1.372e-03     1.331e-04  ok   [2780 s]
+    88    7.0879e-05   1.162e-02   0.250   4.115e-03     1.331e-04  ok   [2819 s]
+    89    6.9801e-05   1.610e-02   1.000   1.372e-03     1.331e-04  ok   [2842 s]
+    90    6.7042e-05   1.100e-02   0.250   4.115e-03     1.331e-04  ok   [2882 s]
+    91    6.5976e-05   1.525e-02   1.000   1.372e-03     1.331e-04  ok   [2904 s]
+    92    6.3422e-05   1.042e-02   0.250   4.115e-03     1.331e-04  ok   [2944 s]
+    93    6.2374e-05   1.444e-02   1.000   1.372e-03     1.331e-04  ok   [2967 s]
+    94    6.0005e-05   9.872e-03   0.250   4.115e-03     1.331e-04  ok   [3007 s]
+    95    5.8979e-05   1.368e-02   1.000   1.372e-03     1.331e-04  ok   [3029 s]
+    96    5.6778e-05   1.870e-02   0.500   4.115e-03     1.331e-04  ok   [3061 s]
+    97    5.6579e-05   1.266e-02   1.000   1.372e-03     1.331e-04  ok   [3083 s]
+    98    5.2495e-05   1.731e-02   0.500   4.115e-03     1.331e-04  ok   [3114 s]
+    99    5.2014e-05   1.172e-02   1.000   1.372e-03     1.331e-04  ok   [3135 s]
+   100    4.8543e-05   1.602e-02   0.500   4.115e-03     1.331e-04  ok   [3164 s]
+   101    4.7861e-05   1.085e-02   1.000   1.372e-03     1.331e-04  ok   [3185 s]
+   102    4.4895e-05   1.483e-02   0.500   4.115e-03     1.331e-04  ok   [3216 s]
+   103    4.4074e-05   1.004e-02   1.000   1.372e-03     1.331e-04  ok   [3238 s]
+   104    4.1526e-05   1.373e-02   0.500   4.115e-03     1.331e-04  ok   [3268 s]
+   105    4.0616e-05   9.298e-03   1.000   1.372e-03     1.331e-04  ok   [3289 s]
+   106    3.8415e-05   1.271e-02   0.500   4.115e-03     1.331e-04  ok   [3318 s]
+   107    3.7452e-05   8.607e-03   1.000   1.372e-03     1.331e-04  ok   [3339 s]
+   108    3.5540e-05   1.177e-02   0.500   4.115e-03     1.331e-04  ok   [3368 s]
+   109    3.4552e-05   7.967e-03   1.000   1.372e-03     1.331e-04  ok   [3388 s]
+   110    3.2883e-05   1.089e-02   0.500   4.115e-03     1.331e-04  ok   [3417 s]
+   111    3.1892e-05   7.375e-03   1.000   1.372e-03     1.331e-04  ok   [3437 s]
+   112    3.0426e-05   1.008e-02   0.500   4.115e-03     1.331e-04  ok   [3465 s]
+   113    2.9449e-05   6.827e-03   1.000   1.372e-03     1.331e-04  ok   [3485 s]
+   114    2.8155e-05   9.333e-03   0.500   4.115e-03     1.331e-04  ok   [3514 s]
+   115    2.7202e-05   6.320e-03   1.000   1.372e-03     1.331e-04  ok   [3534 s]
+   116    2.6055e-05   8.639e-03   0.500   4.115e-03     1.331e-04  ok   [3563 s]
+   117    2.5134e-05   5.850e-03   1.000   1.372e-03     1.331e-04  ok   [3583 s]
+   118    2.4112e-05   7.997e-03   0.500   4.115e-03     1.331e-04  ok   [3612 s]
+   119    2.3230e-05   5.415e-03   1.000   1.372e-03     1.331e-04  ok   [3632 s]
+   120    2.2315e-05   1.481e-02   1.000   4.572e-04     1.331e-04  ok   [3652 s]
+   121    2.2080e-05   8.597e-03   0.250   1.372e-03     1.331e-04  ok   [3689 s]
+   122    2.1352e-05   1.273e-02   1.000   4.572e-04     1.331e-04  ok   [3709 s]
+   123    1.8603e-05   7.393e-03   0.250   1.372e-03     1.331e-04  ok   [3745 s]
+   124    1.7890e-05   1.095e-02   1.000   4.572e-04     1.331e-04  ok   [3766 s]
+   125    1.5748e-05   6.357e-03   0.250   1.372e-03     1.331e-04  ok   [3802 s]
+   126    1.5077e-05   9.415e-03   1.000   4.572e-04     1.331e-04  ok   [3822 s]
+   127    1.3382e-05   1.093e-02   0.500   1.372e-03     1.331e-04  ok   [3850 s]
+   128    1.3160e-05   7.612e-03   1.000   4.572e-04     1.331e-04  ok   [3871 s]
+   129    1.0690e-05   8.839e-03   0.500   1.372e-03     1.331e-04  ok   [3899 s]
+   130    1.0184e-05   6.154e-03   1.000   4.572e-04     1.331e-04  ok   [3920 s]
+   131    8.5736e-06   7.146e-03   0.500   1.372e-03     1.331e-04  ok   [3948 s]
+   132    7.9832e-06   4.975e-03   1.000   4.572e-04     1.331e-04  ok   [3968 s]
+   133    6.8951e-06   5.777e-03   0.500   1.372e-03     1.331e-04  ok   [3996 s]
+   134    6.3192e-06   4.022e-03   1.000   4.572e-04     1.331e-04  ok   [4016 s]
+   135    5.5553e-06   9.342e-03   1.000   1.524e-04     1.331e-04  ok   [4037 s]
+   136    5.4904e-06   7.473e-03   0.500   4.572e-04     1.331e-04  ok   [4065 s]
+   137    5.1171e-06   5.545e-03   1.000   1.524e-04     1.331e-04  ok   [4085 s]
+   138    2.8129e-06   4.435e-03   0.500   4.572e-04     1.331e-04  ok   [4113 s]
+   139    2.3892e-06   3.291e-03   1.000   1.524e-04     1.331e-04  ok   [4134 s]
+   140    1.5673e-06   5.265e-03   1.000   5.081e-05     1.331e-04  ok   [4154 s]
+   141    1.3609e-06   4.357e-03   1.000   1.694e-05     1.331e-04  ok   [4174 s]
+   142    7.8738e-07   1.473e-03   1.000   5.645e-06     1.331e-04  ok   [4195 s]
+   143    1.2835e-07   1.794e-04   1.000   1.882e-06     1.331e-04  ok   [4215 s]
+   144    9.5517e-08           -       -           -     1.331e-04  converged
+[rung 25.0] 145 its, ||R|| 9.552e-08 -> CONVERGED (converged, 4228 s)

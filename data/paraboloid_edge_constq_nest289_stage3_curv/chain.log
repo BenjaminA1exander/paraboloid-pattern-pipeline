@@ -1,0 +1,4 @@
+2026-10-16 17:19:36 stage 3 start: warm from ~/compas_libraries/examples/temp/paraboloid_edge_constq_nest289_odt_qual1e-4_warm, W_CURV 2.0710e-4
+2026-10-16 17:39:58 solver exited 0; step 1410: surf 1.0003 x floor (change 0.000%), obj 1.532e-20 (change 94033500.66%)
+2026-10-16 17:39:58 no converged result -- stopping for inspection
+2026-10-16 17:40:37 solver ended on its trust-cap rule at obj 1.5e-20 (round-off); projections run by hand; DONE

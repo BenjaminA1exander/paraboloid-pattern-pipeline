@@ -1,0 +1,253 @@
+{
+ "h100": {
+  "h": 100.0,
+  "n_nodes": 247,
+  "n_el": 379,
+  "h_eff": 77.94220106778936,
+  "inverted": 0,
+  "q_mean": 0.9614401246162105,
+  "q_min": 0.3640927234061655,
+  "spatial_area_ratio": [
+   0.9229394471282121,
+   1.0463119738097753
+  ],
+  "seam_off_curve_max_mm": 1.2517272693912673e-06,
+  "n_seam": 107,
+  "family": "C",
+  "level": 0,
+  "base_h": 100.0,
+  "tag": "h100",
+  "tip_is_node0": true,
+  "tip_element_size_mm": 1.1407383405260012,
+  "size_at_d": {
+   "10": 2.0083307221536244,
+   "50": 7.546864249654784,
+   "100": 14.580285124199941,
+   "300": 32.248399903488036,
+   "1000": 93.53575835803403
+  },
+  "across_at_d": {
+   "10": 1.3035636321117465,
+   "50": 1.734375557300028,
+   "100": 1.7950928013054248,
+   "300": 2.429673183019336,
+   "1000": 2.7310874541014307
+  },
+  "abaqus_tip_window_nodes": 1,
+  "abaqus": {
+   "tip_node": 0,
+   "rim_nodes": 8,
+   "seam_pairs": 53,
+   "plus_seam": 53,
+   "flower_nodes": 5928,
+   "flower_S3": 9096,
+   "seal_pairs": 1271,
+   "alpha_rule": 34.74570158636892
+  },
+  "vares_dense_peak_gb": 0.00545462965965271
+ },
+ "h050": {
+  "h": 50.0,
+  "n_nodes": 872,
+  "n_el": 1516,
+  "h_eff": 38.97515149072947,
+  "inverted": 0,
+  "q_mean": 0.9614432941116947,
+  "q_min": 0.3640926774265627,
+  "spatial_area_ratio": [
+   0.9597088590518014,
+   1.0386841384602963
+  ],
+  "seam_off_curve_max_mm": 1.2517272693912673e-06,
+  "n_seam": 213,
+  "family": "C",
+  "level": 1,
+  "base_h": 100.0,
+  "tag": "h050",
+  "tip_is_node0": true,
+  "n_parent_nodes": 247,
+  "nested_leaf_exact": true,
+  "nested_spatial_exact": true,
+  "parent_edges_split_exact": true,
+  "tip_element_size_mm": 0.5703692009819402,
+  "size_at_d": {
+   "10": 1.0216877174253038,
+   "50": 3.912194302277866,
+   "100": 7.287398505033432,
+   "300": 16.228665928313063,
+   "1000": 46.53680232039483
+  },
+  "across_at_d": {
+   "10": 2.5624139803203496,
+   "50": 3.3457174867929176,
+   "100": 3.5915374806735394,
+   "300": 4.828066138455095,
+   "1000": 5.4892971460038735
+  },
+  "abaqus_tip_window_nodes": 1,
+  "abaqus": {
+   "tip_node": 0,
+   "rim_nodes": 15,
+   "seam_pairs": 106,
+   "plus_seam": 106,
+   "flower_nodes": 20928,
+   "flower_S3": 36384,
+   "seal_pairs": 2543,
+   "alpha_rule": 8.686563101485529
+  },
+  "vares_dense_peak_gb": 0.06798362731933594
+ },
+ "h025": {
+  "h": 25.0,
+  "n_nodes": 3259,
+  "n_el": 6064,
+  "h_eff": 19.48808215668359,
+  "inverted": 0,
+  "q_mean": 0.9614440857772929,
+  "q_min": 0.3640926101530774,
+  "spatial_area_ratio": [
+   0.9794034342633913,
+   1.0201690717922154
+  ],
+  "seam_off_curve_max_mm": 1.2517272693912673e-06,
+  "n_seam": 425,
+  "family": "C",
+  "level": 2,
+  "base_h": 100.0,
+  "tag": "h025",
+  "tip_is_node0": true,
+  "n_parent_nodes": 872,
+  "nested_leaf_exact": true,
+  "nested_spatial_exact": true,
+  "parent_edges_split_exact": true,
+  "tip_element_size_mm": 0.2851846043311589,
+  "size_at_d": {
+   "10": 0.5150339681980434,
+   "50": 1.9571379999261662,
+   "100": 3.644481066278539,
+   "300": 8.114392718112395,
+   "1000": 23.22373821388827
+  },
+  "across_at_d": {
+   "10": 5.083134418904006,
+   "50": 6.687876322137972,
+   "100": 7.181534048730204,
+   "300": 9.656061169666318,
+   "1000": 10.999707876862082
+  },
+  "abaqus_tip_window_nodes": 3,
+  "abaqus": {
+   "tip_node": 0,
+   "rim_nodes": 29,
+   "seam_pairs": 212,
+   "plus_seam": 212,
+   "flower_nodes": 78216,
+   "flower_S3": 145536,
+   "seal_pairs": 5087,
+   "alpha_rule": 2.171649381333501
+  },
+  "vares_dense_peak_gb": 0.949598640203476
+ },
+ "h012": {
+  "h": 12.5,
+  "n_nodes": 12581,
+  "n_el": 24256,
+  "h_eff": 9.744104381060893,
+  "inverted": 0,
+  "q_mean": 0.961444283487564,
+  "q_min": 0.3640924756055982,
+  "spatial_area_ratio": [
+   0.9886175685456847,
+   1.0103015390087877
+  ],
+  "seam_off_curve_max_mm": 1.2517272693912673e-06,
+  "n_seam": 849,
+  "family": "C",
+  "level": 3,
+  "base_h": 100.0,
+  "tag": "h012",
+  "tip_is_node0": true,
+  "n_parent_nodes": 3259,
+  "nested_leaf_exact": true,
+  "nested_spatial_exact": true,
+  "parent_edges_split_exact": true,
+  "tip_element_size_mm": 0.14259230264565612,
+  "size_at_d": {
+   "10": 0.25953082353217183,
+   "50": 0.9787161277449734,
+   "100": 1.8223146635938905,
+   "300": 4.056919084297545,
+   "1000": 11.612294087958858
+  },
+  "across_at_d": {
+   "10": 10.087383282732334,
+   "50": 13.37374190309995,
+   "100": 14.36248381814296,
+   "300": 19.31344224834473,
+   "1000": 21.998610629951077
+  },
+  "abaqus_tip_window_nodes": 10,
+  "abaqus": {
+   "tip_node": 0,
+   "rim_nodes": 57,
+   "seam_pairs": 424,
+   "plus_seam": 424,
+   "flower_nodes": 301944,
+   "flower_S3": 582144,
+   "seal_pairs": 10175,
+   "alpha_rule": 0.5429128832041299
+  },
+  "vares_dense_peak_gb": 14.151474326848984
+ },
+ "h006": {
+  "h": 6.25,
+  "n_nodes": 49417,
+  "n_el": 97024,
+  "h_eff": 4.872060103411099,
+  "inverted": 0,
+  "q_mean": 0.9614443328052277,
+  "q_min": 0.36409220651007934,
+  "spatial_area_ratio": [
+   0.9886175702103682,
+   1.0056790542592415
+  ],
+  "seam_off_curve_max_mm": 1.2517272693912673e-06,
+  "n_seam": 1697,
+  "family": "C",
+  "level": 4,
+  "base_h": 100.0,
+  "tag": "h006",
+  "tip_is_node0": true,
+  "n_parent_nodes": 12581,
+  "nested_leaf_exact": true,
+  "nested_spatial_exact": true,
+  "parent_edges_split_exact": true,
+  "tip_element_size_mm": 0.07129615138285407,
+  "size_at_d": {
+   "10": 0.1300154474653303,
+   "50": 0.4894166991395812,
+   "100": 0.9111532165748992,
+   "300": 2.0284434941854848,
+   "1000": 5.8061938918141545
+  },
+  "across_at_d": {
+   "10": 20.135968007573048,
+   "50": 26.7442792856761,
+   "100": 28.72509737255633,
+   "300": 38.62719009200237,
+   "1000": 43.996866264084176
+  },
+  "abaqus_tip_window_nodes": 36,
+  "abaqus": {
+   "tip_node": 0,
+   "rim_nodes": 113,
+   "seam_pairs": 848,
+   "plus_seam": 848,
+   "flower_nodes": 1186008,
+   "flower_S3": 2328576,
+   "seal_pairs": 20351,
+   "alpha_rule": 0.13572825440541422
+  },
+  "vares_dense_peak_gb": 218.33538016676903
+ }
+}
