@@ -291,7 +291,7 @@ def main():
     ap.add_argument("--stock-vumat-imports", action="store_true",
                     help="imports (prs, stlK) of this variant with the stock VUMAT (start-up viscosity), as naive's")
     ap.add_argument("--skip-asm-gate", action="store_true",
-                    help="naive only: start prs even if the asm KE/IE gate fails; "
+                    help="naive only (user decision 2026-10-14, option 2): start prs even if the asm KE/IE gate fails; "
                          "the settle gate still judges the final state")
     ap.add_argument("--no-asm", action="store_true",
                     help="import-chain job: never run the asm here (it ran in its own --asm-only job); exit 4 if missing")
@@ -307,7 +307,7 @@ def main():
         A.PRS_STOCK_VUMAT = tuple(sorted(set(A.PRS_STOCK_VUMAT) | {a.variant}))
     if a.skip_asm_gate:
         if a.variant != "naive":
-            raise SystemExit("--skip-asm-gate is for naive only")
+            raise SystemExit("--skip-asm-gate is for naive only (user decision 2026-10-14)")
         A.ASM_GATE_SKIP.add(a.variant)
     global SETTLE_MAX
     SETTLE_MAX = a.settle_max
@@ -352,7 +352,7 @@ def main():
             A.run_queue(a.rung, [a.variant])
             if not A.finished(jd, A.jobs(a.variant)[1]):
                 print("[runner] prs did not finish -- no settle", flush=True)
-                sys.exit(1)                                # Slurm shows FAILED, not COMPLETED 0:0
+                sys.exit(1)                                # Slurm shows FAILED, not COMPLETED 0:0 (2026-10-13)
         start = last_hold_job(jd, a.variant)
         res = settle_chain(rd, jd, a.variant, a.settle_alpha, a.creep, start)
         A.log(rd, f"{a.variant}: settle chain from {start}: {res}")

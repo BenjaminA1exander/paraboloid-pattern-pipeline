@@ -33,7 +33,7 @@ OUTD = AC.OUTD
 THD = os.path.join(os.path.dirname(OUTD), "thesis")
 PAT = [("vares", "VaReS pattern", "#0072B2", "o"), ("uniform", "Uniform shrinkage", "#D55E00", "s")]
 QOI = [("shape", "Shape"), ("warp", "Warp stress"), ("weft", "Weft stress")]
-# order plot: stresses only (2026-10-16, user: "remove shape from order convergence plots") -- the last shape changes
+# order plot: stresses only -- the last shape changes
 # (<= 1.1 um, < 0.1 %) are below the settle tolerance, so no observed order is reported for shape
 QOI_ORDER = [("warp", "Warp stress"), ("weft", "Weft stress")]
 NORM = [("mae", r"$L_1$"), ("rms", r"$L_2$")]

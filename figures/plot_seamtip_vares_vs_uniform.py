@@ -51,7 +51,7 @@ PAT = [("vares", "VaReS pattern", "#0072B2", "o", "-"), ("uniform", "Uniform shr
 OUTD = os.path.join(HERE, "results", "abaqus_ladder_seamtip", "vares_vs_uniform")
 CACHE = os.path.join(OUTD, "vares_vs_uniform_cache.json")
 RBINS = np.linspace(0.0, 1.0, 41)
-# maps colour scale (2026-10-16, user picked from the options sheet colour_scale_options.png): magma -- perceptually
+# maps colour scale: magma -- perceptually
 # uniform, colour-blind safe, lightness monotonic (dark = negative, light = positive), so the sign survives in greyscale;
 # zero is a mid-tone, read off the colour bar
 CMAP = plt.get_cmap("magma")

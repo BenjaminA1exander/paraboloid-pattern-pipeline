@@ -115,7 +115,7 @@ def extract_paraboloid(npz_path=CFG.FORM_NPZ, *,
     tension_scale = (p_phys / abs(p_fdm)) * geom_scale
     prof.geom_scale = geom_scale
     prof.tension_scale = tension_scale
-    # VaReS target representation (user decision 2026-07-28): each tension
+    # VaReS target representation: each tension
     # component is a LINEAR closest-fit (least-squares straight line) over the
     # kept rings -- NOT a smoothing spline.  Boundary-condition tension is part
     # of the form and is fitted, not filtered.  Rings beyond S_FIT_MAX_MM are

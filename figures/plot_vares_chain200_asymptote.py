@@ -68,7 +68,7 @@ def main():
             ax.plot(hF, y, "D", color=COL, mec="k", mew=0.6, ms=6, zorder=3)
             if xtra:
                 ax.plot([r["h"] for r in xtra], [r[key][i] for r in xtra], "D", color=COL, mec="k", mew=0.6, ms=6,
-                        zorder=3)        # 2026-10-14 (user): same orange series, no separate legend
+                        zorder=3)        # same orange series, no separate legend
             ax.set_xlim(0, XMAX)
             ax.ticklabel_format(axis="y", useOffset=False)
             ax.set_xlabel(r"Element size $h_{\mathrm{eff}}$ (mm)")

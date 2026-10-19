@@ -55,7 +55,7 @@ GRADING = sys.argv[sys.argv.index("--grading") + 1] if "--grading" in sys.argv e
 FAMILIES = {"A": 50.0, "B": 70.7}
 if "--bases" in sys.argv:                         # e.g. --bases 100 : one family "C" from a 100 mm base
     FAMILIES = {chr(67 + i): float(b) for i, b in enumerate(sys.argv[sys.argv.index("--bases") + 1].split(","))}
-# --family D (2026-10-13, user: coarser points at h_eff ~100 and ~50 for the 100 mm chain's field asymptote): label of a
+# --family D: label of a
 # single extra family, e.g. --bases 128 --levels 1 --family D -> 128 -> 64 into the same store, checks_D_L1.json
 if "--family" in sys.argv:
     FAMILIES = {sys.argv[sys.argv.index("--family") + 1]: b for b in FAMILIES.values()}

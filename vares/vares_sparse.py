@@ -129,7 +129,7 @@ def restrict(K, free):
     return K[free][:, free].tocsc()
 
 
-# Iterative refinement (2026-10-13): h012 (25k dofs) stopped at ||R|| 1.217e-7 > NEWTON_TOL_R 1e-7 on the step floor
+# Iterative refinement: h012 (25k dofs) stopped at ||R|| 1.217e-7 > NEWTON_TOL_R 1e-7 on the step floor
 # -- near-singular tangent (min eig 1.8e-4) at lambda ~ 1e-6, the SuperLU solution loses accuracy and the Newton step
 # stops being a descent direction.  REFINE correction passes x += LU^-1 (b - A x) reuse the factorisation (cheap) and
 # restore the solve accuracy; the tolerance is untouched.  MESHSTUDY_REFINE=0 gives the previous behaviour.

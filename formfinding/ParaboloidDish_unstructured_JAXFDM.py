@@ -117,7 +117,7 @@ N_STATIONS = int(os.environ.get("JAXFDM_N_STATIONS", "25"))
 # q parametrisation: "stations" (smooth q_m(s), q_h(s) profiles, see header) or "edge" (one free q per
 # edge, as SphereDishFanBeam_unstructured_JAXFDM / cap_A_unstr).  Per-edge q gives every node the local
 # freedom to balance the in-plane forces of an irregular net; a smooth profile cannot, so its nodes
-# slide (2026-10-01).  "edge" is seeded with COTANGENT weights q_e = (cot a + cot b)/2 on the seed
+# slide.  "edge" is seeded with COTANGENT weights q_e = (cot a + cot b)/2 on the seed
 # surface -- a uniform isotropic membrane stress, so the seed is mesh-consistent (uniform q is not:
 # a triangle net under uniform q carries sqrt3 q) and carries no knowledge of the target stress.
 Q_MODE = os.environ.get("JAXFDM_Q_MODE", "stations").strip().lower()
@@ -180,7 +180,7 @@ W_TAN = float(os.environ.get("JAXFDM_W_TAN", "0.0"))
 # NB as in the BWB there is no area FLOOR: a shrinking triangle is caught by SR (it goes sliver)
 # or by its neighbours' area cap, not directly.
 W_MESH = float(os.environ.get("JAXFDM_W_MESH", "0.0"))
-# Smooth element-QUALITY energy (2026-10-04): with per-edge q the shape fixes only the NORMAL position
+# Smooth element-QUALITY energy: with per-edge q the shape fixes only the NORMAL position
 # of the nodes; their tangential position is spare freedom.  Use it for the mesh instead of letting
 # nodes drift:  W_QUAL * [ mean (A/A_seed - 1)^2 + mean (SR - 1)^2 ]  over every triangle, A_seed the
 # triangle's own seed area (absolute, so blind neither to shrinkage nor to drift), SR the shape ratio

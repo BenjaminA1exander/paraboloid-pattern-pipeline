@@ -41,7 +41,7 @@ import MeshStudy_paraboloid_vares_ckpt as CK      # noqa: E402
 import MeshStudy_paraboloid_vares as MS           # noqa: E402
 
 TARGET = "cstraw"
-# --grading tippolar210nest (2026-10-12, user: one nested family from 100 mm, no interleaving) | tippolarnest (A/B)
+# --grading tippolar210nest | tippolarnest (A/B)
 GRADING = sys.argv[sys.argv.index("--grading") + 1] if "--grading" in sys.argv else "tippolar210nest"
 ROOT = CK.study_root(TARGET, GRADING)
 STORE = CK.nested_store(TARGET, GRADING)

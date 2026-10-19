@@ -160,7 +160,7 @@ class Net:
             mm = (s_c >= lo) & (s_c <= hi)
             if mm.sum() > deg + 2:
                 # local polynomial fit of H(s), slope taken AT s0.  deg=1 (default) measured best on the
-                # 4626-node run (2026-10-04): deg=2 fits the staircase noise (0.2R-0.96R 0.53 vs 0.50%,
+                # 4626-node run: deg=2 fits the staircase noise (0.2R-0.96R 0.53 vs 0.50%,
                 # inner ends 19% vs 6% at a 4-edge window).  The comments below describe deg=2:
                 # removes the bias of a straight line through a curving H, and keeps the one-sided
                 # windows at the apex / rim unbiased to first order

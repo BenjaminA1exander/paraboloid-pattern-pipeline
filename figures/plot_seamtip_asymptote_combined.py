@@ -43,7 +43,7 @@ SER = [("shape_rms", "Shape", "#0072B2", "o"), ("warp_rms", "Warp stress", "#E69
        ("weft_rms", "Weft stress", "#009E73", "D")]
 PAT = [("vares", "VaReS pattern"), ("uniform", "Uniform shrinkage")]
 OUTD = os.path.join(HERE, "results", "abaqus_ladder_seamtip", "paper")
-# --area (2026-10-16, user: "replot it by area"): each measure by AREA QUANTILE instead of rms -- P90 = the error level
+# --area: each measure by AREA QUANTILE instead of rms -- P90 = the error level
 # not exceeded on 90 % of the gore area (P50, the area median, in the cache / json too); per element |e| for warp and
 # weft, sqrt(element mean square normal deviation) for shape.  The rms weights each element by its error squared, so a
 # 1 % seam strip with 10x the error carries half of it; the quantile counts area.

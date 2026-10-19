@@ -359,7 +359,7 @@ class MembraneProfile:
         tip_grade=(R_mm, g_min): size = h * max(g_min, min(1, d / R_mm)) with h = mesh_size_mm, i.e.
         h times a FIXED grading function, so every region (tip included) refines with h; the tip
         zone d < R has ~2 theta R / h elements across.  Floor h * g_min.
-        tip_affine=(g0, k_per_mm) (2026-10-10): size = h * min(1, g0 + k d), floor h * g0 -- the grading
+        tip_affine=(g0, k_per_mm): size = h * min(1, g0 + k d), floor h * g0 -- the grading
         of the 25 mm remesh test (graded_tip_test.py: 2 mm + 0.15 d at h = 25 <=> g0 0.08, k 0.006/mm)
         scaled with h.  Mutually exclusive with tip_grade.
 

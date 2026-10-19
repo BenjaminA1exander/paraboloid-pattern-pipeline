@@ -36,19 +36,19 @@ import plot_vares_journal_combined as CB                           # noqa: E402
 from plot_vares_journal_combined import RS, CJ, plt, mtri, TwoSlopeNorm, Line2D  # noqa: E402
 
 OUT = os.path.join(HERE, "fig_vares_journal_combined_flat")
-W_MM, H_MM = 190.0, float(os.environ.get("FIG_H_MM", "99"))   # 122 -> 99 mm (2026-10-13, user: less white space)
-# 2026-10-11 (user): all text bigger.  One factor on every font size (rcParams set by RS + the constants here);
+W_MM, H_MM = 190.0, float(os.environ.get("FIG_H_MM", "99"))   # 122 -> 99 mm
+# all text bigger.  One factor on every font size (rcParams set by RS + the constants here);
 # FONT_SCALE = 1 reproduces the previous sizes.
 FONT_SCALE = float(os.environ.get("FIG_FONT_SCALE", "1.3"))
 FS_TICK, FS_PANEL, FS_CLABEL = 7.0 * FONT_SCALE, 9.0 * FONT_SCALE, 6.0 * FONT_SCALE
 plt.rcParams.update({k: plt.rcParams[k] * FONT_SCALE for k in
                      ("font.size", "axes.labelsize", "xtick.labelsize", "ytick.labelsize", "legend.fontsize")
                      if isinstance(plt.rcParams[k], (int, float))})
-# 2026-10-13 (user): everything dimensionless -- lengths in (c), (d), (e) over the dish aperture diameter D
-# (paraboloid_dish_config.DIAMETER_MM = 5000 mm); (a), (b) stay in MPa (user)
+# everything dimensionless -- lengths in (c), (d), (e) over the dish aperture diameter D
+# (paraboloid_dish_config.DIAMETER_MM = 5000 mm); (a), (b) stay in MPa
 import paraboloid_dish_config as CFG                               # noqa: E402
 D_MM = float(CFG.DIAMETER_MM)
-# 2026-10-16 (user): panel (c) in black -- orange read as belonging to the weft surface (b), blue to the warp (a).
+# panel (c) in black -- orange read as belonging to the weft surface (b), blue to the warp (a).
 # Previous orange version: fig_vares_journal_combined_flat_orangec_superseded.*
 C_COL = "k"
 
@@ -57,7 +57,7 @@ def gore_panel_h(ax, cax, Xs, T, f, x0, step, cticks, lab, show_ylab, scale=None
     tri = mtri.Triangulation((Xs[:, 0] - x0) / D_MM, Xs[:, 1] / D_MM, T)   # s/D along x, rim left
     lim = float(np.abs(f).max())
     if one_sided:
-        # 2026-10-16 (user): inward displacement, >= 0 except round-off-sized values on the centreline (where sign(y)
+        # inward displacement, >= 0 except round-off-sized values on the centreline (where sign(y)
         # flips).  Red half of the same RdBu_r (red = positive, as in (d)); values below 0 take the white end.
         from matplotlib.colors import ListedColormap, Normalize
         cmap = ListedColormap(plt.get_cmap("RdBu_r")(np.linspace(0.5, 1.0, 256)))
@@ -77,7 +77,7 @@ def gore_panel_h(ax, cax, Xs, T, f, x0, step, cticks, lab, show_ylab, scale=None
     lab_lv = lv[::2][:-1] if one_sided else (lv[::2] if len(lv) > 9 else lv)
     tl = ax.clabel(cs, levels=lab_lv, fmt=lambda v: ("%g" % v).replace("-", "−"),
                    fontsize=FS_CLABEL, inline_spacing=1)
-    # horizontal labels (2026-10-13): rotated onto the near-vertical u_s contours the minus sign lay along the
+    # horizontal labels: rotated onto the near-vertical u_s contours the minus sign lay along the
     # contour line and vanished ("−8" read "8")
     for t in tl:
         t.set_rotation(0)
@@ -106,11 +106,11 @@ def gore_panel_h(ax, cax, Xs, T, f, x0, step, cticks, lab, show_ylab, scale=None
 
 
 def convergence_panel_tip_split(ax):
-    """Panel (c), 2026-10-11 (user): pattern map only, split into the region away from the tip and the tip
+    """Panel (c), pattern map only, split into the region away from the tip and the tip
     zone (last 10 % of the gore), as SUCCESSIVE differences (each mesh against the next finer one; reference-
     free, the convention of Richardson / GCI studies).  Computation: plot_vares_convergence_tip_split.
     split_metrics (one rigid fit per pair over the whole gore, area-weighted rms per region).  Plotted at h_eff
-    of the coarser mesh of each pair.  No reference slope and no fitted order on the panel (user)."""
+    of the coarser mesh of each pair.  No reference slope and no fitted order on the panel."""
     import plot_vares_convergence_tip_split as TS
     h, out, _ = TS.split_metrics()
     series = (("away from tip", dict(color="0.05", marker="s", ls="-", mfc="0.05")),
@@ -135,10 +135,10 @@ def convergence_panel_tip_split(ax):
 
 
 def asymptote_panel_chain100(ax):
-    """Panel (c), 2026-10-13 (user): panel (b) of fig_vares_chain100_wholegore -- whole-gore rms of the compensation
+    """Panel (c), panel (b) of fig_vares_chain100_wholegore -- whole-gore rms of the compensation
     field on the nested 100 mm chain vs h_eff, fit f_inf + a h^p, extrapolated limit.
     Same data and styles as plot_vares_chain100_wholegore.py; the legend sits inside the axes (lower left).  No
-    uncertainty band (user, 2026-10-13: +-0.0001 mm is invisible at this scale)."""
+    uncertainty band."""
     import plot_vares_chain100_asymptote as AS
     rows = [r for r in AS.load() if r["ok"]]
     if len(rows) != len(AS.RUNGS):
@@ -171,12 +171,12 @@ def asymptote_panel_chain100(ax):
 
 
 def asymptote_panel_chain200(ax):
-    """Panel (c), 2026-10-14 (user: "plot in orange, no need for a separate legend ... (a) specifically, field"): panel (a)
+    """Panel (c), specifically, field"): panel (a)
     of fig_vares_chain200_field_asymptote -- whole-gore rms of the compensation field on the nested chain from a 200 mm
     base (200 -> 12.5 mm far field, h_eff 99 -> 6.2 mm) plus the 100 mm chain's converged 6.25 mm rung (h_eff 4.9 mm,
     0.3 um off the fit), one orange series; fit f_inf + a h^p to the 200 mm chain rungs.  Same format as
     asymptote_panel_chain100 (kept: FIG_PANEL_C=chain100 reproduces the previous figure).
-    2026-10-15 (user: "replot the convergence in degrees of freedom on the x axis"): default x axis is the number of
+    default x axis is the number of
     degrees of freedom N = 2 n_nodes - 3 (two in-plane coordinates per node less the solver's 3-dof rigid pin,
     build_pin_dof_set_geom; equals len(free) in every setup.npz on disk), log scale.  Fit in N directly,
     f_inf + a N^-q (AS.limit on x = N^-1/2, q = p/2).  FIG_C_X=h reproduces the h_eff/D axis."""
@@ -253,7 +253,7 @@ def _asymptote_panel_chain200_dof(ax, AS, y, yx):
 
 
 def convergence_panel_ref_only(ax, c):
-    """CB.convergence_panel without the 'vs next finer mesh' series (user, 2026-10-11): only the differences
+    """CB.convergence_panel without the 'vs next finer mesh' series: only the differences
     against the finest rung.  Same data, styles, axes and slope triangle."""
     # 2026-10-11 presentation pass: neutral black / grey (blue and orange already mean warp / weft in (a), (b));
     # series told apart by marker fill and dash too (greyscale safe); y range fitted to the data; the observed
@@ -267,7 +267,7 @@ def convergence_panel_ref_only(ax, c):
         y = c[key][k]
         ax.loglog(h, y, lw=1.1, ms=4.2, mew=0.9, zorder=4, **st)
         handles.append(Line2D([], [], lw=1.1, ms=4.2, mew=0.9, label=lab, **st))
-    # no slope triangle (user, 2026-10-11): differences are taken against the finest mesh, which steepens
+    # no slope triangle: differences are taken against the finest mesh, which steepens
     # the curve near h_ref, and the observed order (~1.7-1.8 from successive rungs) is not second order --
     # a slope-2 reference would suggest a rate that is not present
     ax.set_xlim(14, 75)
@@ -299,7 +299,7 @@ def rigid_fit_area(A, B, w):
 def deviation_graded():
     """CB.deviation for the graded 12.5 mm rung: converged pattern minus the lsq seed of the same mesh
     (rigid fit removed, element-scale part smoothed out exactly as CB.deviation).
-    2026-10-16 (user: "update them to the newest best one, 12.5 mm"): the 12.5 mm rung of the 200 mm nested chain
+    the 12.5 mm rung of the 200 mm nested chain
     (grading tippolar210c200nest, 30 689 nodes, converged on the round-off floor) -- the chain of panel (c).  Was the
     tiptest ladder's 12.5 mm rung (7 879 nodes); FIG_DE_GRADING=tiptest reproduces that
     (fig_vares_journal_combined_flat_de_tiptest_superseded.*)."""
@@ -334,7 +334,7 @@ MIN_GAP_MM = 1.5          # required clearance between any two figure elements
 
 
 def report_clearance(fig):
-    """Spacing check (2026-10-11, user: nothing may touch).  Rendered bounding boxes of every element --
+    """Spacing check.  Rendered bounding boxes of every element --
     each axes with its tick labels, axis labels and legend (3-D axes: their tick labels and axis labels only,
     not the empty panes), colour bars, figure texts, figure legend -- and every pair closer than
     MIN_GAP_MM is printed.  Also flags anything outside the page."""
@@ -390,7 +390,7 @@ def main():
     fig = plt.figure(figsize=(W_MM / 25.4, H_MM / 25.4))
     F = lambda x, y, w, h: [x / W_MM, y / H_MM, w / W_MM, h / H_MM]   # mm from bottom-left
 
-    # 2026-10-11 presentation pass (user): panel letters only -- what each panel shows goes in the caption;
+    # 2026-10-11 presentation pass: panel letters only -- what each panel shows goes in the caption;
     # inside the figure the only text is axis labels and legends.  The stresses are therefore z-axis labels.
     # The empty band between the rows is closed up and the gores are drawn larger.
     H3D = float(os.environ.get("FIG_H3D", "56"))
@@ -409,13 +409,13 @@ def main():
         Line2D([], [], color="0.05", lw=1.0, ls=(0, (3.5, 1.8)), label="branch boundary of the law")],
         loc="center", bbox_to_anchor=(69 / W_MM, (TOP - 3.6) / H_MM), ncol=2, fontsize=FS_TICK,
         handlelength=2.2, columnspacing=2.0)
-    # 2026-10-13 (user): flatter (48 -> 30 mm tall) and level with the material surfaces of (a), (b): axes plus
+    # flatter (48 -> 30 mm tall) and level with the material surfaces of (a), (b): axes plus
     # its x label centred on their rendered extent (~55-103 mm from the bottom)
     axc = fig.add_axes(F(149.5, TOP + 15.5, 37.5, 30))      # 1 mm right: "1.504" ticks are wider than "7.52"
-    # 2026-10-14 (user): the 200 mm chain + the 100 mm chain's 6.25 mm rung; previous figure kept as
+    # the 200 mm chain + the 100 mm chain's 6.25 mm rung; previous figure kept as
     # fig_vares_journal_combined_flat_chain100_superseded.*, reproduce with FIG_PANEL_C=chain100
     if os.environ.get("FIG_PANEL_C", "chain200") == "chain100":
-        asymptote_panel_chain100(axc)          # was convergence_panel_tip_split(axc) (2026-10-13, user)
+        asymptote_panel_chain100(axc)          # was convergence_panel_tip_split(axc)
     else:
         asymptote_panel_chain200(axc)
 
@@ -423,7 +423,7 @@ def main():
     # width budget of the row (190 mm): y label + ticks 14.5 | gore gw | bar + ticks + label 13 | gap |
     # e ticks 9 | gore gw | bar 13  ->  gw = 65 mm (>= 1.5 mm clearance, checked)
     # 2026-10-13: 16 -> 15 mm and (d) moved right 2 mm -- the y/D tick labels ("−0.06") are wider than "−0.3"
-    # 2026-10-16 (user): bottom row edge to edge with the top row -- outer extents x = 1.2 .. 187.0 mm; gh sized so the
+    # bottom row edge to edge with the top row -- outer extents x = 1.2 .. 187.0 mm; gh sized so the
     # (e) colour-bar label ends at the right edge of (c); (e) shifts right with the wider (d)
     gh = float(os.environ.get("FIG_GH", "15.7"))               # gore height (mm); width follows the aspect
     gw = gh * 2.92 / 0.72
@@ -433,7 +433,7 @@ def main():
     caxd = fig.add_axes(F(16.5 + gw + 2.0, yb, 1.8, gh))        # bar as tall as the gore
     axe = fig.add_axes(F(xe, yb, gw, gh))
     caxe = fig.add_axes(F(xe + gw + 2.0, yb, 1.8, gh))
-    # u / D in units of 10^-3 (user, 2026-10-13: x10^-3 is the standard form), factor printed above each bar
+    # u / D in units of 10^-3, factor printed above each bar
     k = 1e3 / D_MM
     sc = r"$\times 10^{-3}$"
     gore_panel_h(axd, caxd, Xs, T, us[:, 0] * k, x0, 0.4, [-2, 0, 2], r"$u_s/D$", True, sc)

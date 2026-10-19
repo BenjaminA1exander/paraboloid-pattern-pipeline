@@ -28,9 +28,9 @@ from plot_vares_nested_field_asymptote import field_rms                         
 
 GRADING = "tippolar210nest"
 RUNGS = (100.0, 50.0, 25.0, 12.5, 6.25)
-# family D (2026-10-13): second nested family 128 -> 64 mm, h_eff ~98 / ~49 -- coarser points, an independent mesh
+# family D: second nested family 128 -> 64 mm, h_eff ~98 / ~49 -- coarser points, an independent mesh
 # family, shown but NOT fitted (the fit stays the 100 mm chain's)
-# 2026-10-13 (user: "remove the non-subdivided scheme"): OFF by default -- the figure is the 100 mm chain only;
+# OFF by default -- the figure is the 100 mm chain only;
 # --family-d adds the D points back (results kept in the study root)
 RUNGS_D = (128.0, 64.0) if "--family-d" in sys.argv else ()
 COL, COL_D = "#D55E00", "#0072B2"

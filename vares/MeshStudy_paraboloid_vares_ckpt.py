@@ -52,7 +52,7 @@ import MeshStudy_paraboloid_vares as MS         # noqa: E402
 # rungs beyond MS.LADDER, continuing the sqrt(2) ladder
 FINE = [17.7, 12.5]
 ROOTS = {"linearfit": MS.ROOT, "cst": os.path.join(CFG.TEMP_DIR, "meshstudy_vares_cst"),
-         # cstraw (2026-10-08): the RAW extracted field of gore RAW_GORE, no 24-gore / mirror average --
+         # cstraw: the RAW extracted field of gore RAW_GORE, no 24-gore / mirror average --
          # every point of the target is a form-found value, checkable against exact statics
          "cstraw": os.path.join(CFG.TEMP_DIR, "meshstudy_vares_cstraw")}
 RAW_GORE = 0
@@ -62,7 +62,7 @@ SEED_TARGET = {"linearfit": "linearfit", "cst": "cst", "cstraw": "cst"}
 # runs to the full tip, where the 24 gore tips meet: h200 needs 156 its there (37 trimmed), a slow
 # damped crawl on a soft tip mode, so the 300 budget of the published study is too tight.
 MAX_IT_LAUNCH = {"linearfit": 300, "cst": 1000, "cstraw": 1000}
-# Retries of the 2026-10-04 cst ladder (user decision 2026-10-05).  The first attempts stay on disk
+# Retries of the 2026-10-04 cst ladder.  The first attempts stay on disk
 # as hNNN_<reason>_lsqseed/.  Both apply only to a rung's FIRST start (the seed is frozen in
 # setup.npz), so a resume reproduces the same run.
 #   SEED_FROM: seed = the converged pattern of the neighbouring rung, P1-sampled at this rung's leaf
@@ -75,7 +75,7 @@ MAX_IT_LAUNCH = {"linearfit": 300, "cst": 1000, "cstraw": 1000}
 #     while ||R|| > NEWTON_TOL_R -- it only ends a run as a failure; the budget still caps it.
 SEED_FROM = {"cst": {12.5: 17.7, 50.0: 35.4}}
 NO_EARLY_STALL = {"linearfit": False, "cst": True, "cstraw": True}
-# Tip-graded ladder (2026-10-08).  The default mesher sizes the tip zone theta*(r_ref + d), independent
+# Tip-graded ladder.  The default mesher sizes the tip zone theta*(r_ref + d), independent
 # of h, so ~2 elements span the tip on EVERY rung and the tip is never refined (the cst ladder converges
 # at order ~1 in the last 10 % of the gore, order ~2 mid-gore).  --grading tip meshes with
 # size = h * max(G_MIN, min(1, d / R)): h times a fixed grading function, so the tip refines with h
@@ -83,12 +83,12 @@ NO_EARLY_STALL = {"linearfit": False, "cst": True, "cstraw": True}
 # Seed: the converged UNIFORM rung of the same h, P1-sampled at the graded leaf -- it changes the start,
 # not the answer (NEWTON_TOL_R unchanged).  Root: <target root>_tipgrade.
 GRADINGS = {"none": None, "tip": (600.0, 0.1),
-            # tiptest (2026-10-10, user choice): the grading of the 25 mm Abaqus remesh test
+            # tiptest: the grading of the 25 mm Abaqus remesh test
             # (graded_tip_test.py, 2 mm + 0.15 d at h = 25) scaled with h: size = h * min(1, 0.08 + 0.006 d),
             # floor 0.08 h.  Passed as build_gore_gmsh(tip_affine=...); root <target root>_tiptestgrade.
             "tiptest": (0.08, 0.006)}
 GRADING_KW = {"none": "tip_grade", "tip": "tip_grade", "tiptest": "tip_affine"}
-# tippolar (2026-10-11, user: "use a different method near the tip so elements do not become so distorted").  The
+# tippolar.  The
 # tiptest slope (0.006 h per mm) outgrows the gore's opening (2 theta = 0.262 mm per mm), leaving 0.262 / (0.006 h)
 # elements across the tip zone -- one strip of stretched triangles at a 50 mm base.  Same affine form, slope matched
 # to the opening: k = 2 theta / C -> C / h elements across the tip zone at every distance, floor 0.02 h; k and g0 do
@@ -97,14 +97,14 @@ GRADING_KW = {"none": "tip_grade", "tip": "tip_grade", "tiptest": "tip_affine"}
 TIPPOLAR_C = 105.0
 GRADINGS["tippolar"] = (0.02, 2.0 * np.pi / CFG.N_GORES / TIPPOLAR_C)
 GRADING_KW["tippolar"] = "tip_affine"
-# NESTED gradings (2026-10-11): the rung mesh is not meshed by gmsh here but read from the frozen store
+# NESTED gradings: the rung mesh is not meshed by gmsh here but read from the frozen store
 # temp/gore_nested_<target>_<base grading>/<tag>.npz (build_gore_nested_ladder.py): a gmsh base at 70.7 / 50 mm and its
 # red-refined subdivisions (gore_subdivision.py), families B 70.7 -> 35.35 -> 17.675 and A 50 -> 25 -> 12.5, so every
 # rung contains its parent exactly.  Seed: nested_seed().  Run by vares_nested_chain.py, not --launch.
 NESTED = {"tippolarnest": "tippolar"}
 GRADINGS["tippolarnest"] = GRADINGS["tippolar"]
 GRADING_KW["tippolarnest"] = "tip_affine"
-# ONE nested family from a 100 mm base (2026-10-12, user: "go with the 100 mm chain", no interleaving):
+# ONE nested family from a 100 mm base:
 # 100 -> 50 -> 25 -> 12.5 -> 6.25, tip-polar grading with C = 210 mm (~2 elements across the tip zone at the 100 mm
 # base, where C = 105 leaves one stretched strip); the sparse solver removes the RAM limit that set C = 105.
 GRADINGS["tippolar210"] = (0.02, 2.0 * np.pi / CFG.N_GORES / 210.0)
@@ -114,7 +114,7 @@ GRADINGS["tippolar210nest"] = GRADINGS["tippolar210"]
 GRADING_KW["tippolar210nest"] = "tip_affine"
 NEST_RUNGS = {"tippolarnest": [70.7, 50.0, 35.4, 25.0, 17.7, 12.5, 8.8, 6.25],
               "tippolar210nest": [100.0, 50.0, 25.0, 12.5, 6.25, 128.0, 64.0]}
-# family D (2026-10-13, user: coarser points at h_eff ~100 and ~50 for the field asymptote of the 100 mm chain): a second
+# family D: a second
 # nested family 128 -> 64 mm (same tip-polar C = 210 grading, same store, build_gore_nested_ladder.py --bases 128
 # --levels 1 --family D); h_eff 98.4 / 49.2.  Not part of the 100 mm chain; plotted as an independent family.
 # ONE nested family from a 200 mm base (2026-10-13, user: "rerun the whole ladder using a coarser starting mesh ... 200
@@ -129,7 +129,7 @@ GRADINGS["tippolar210c200nest"] = GRADINGS["tippolar210c200"]
 GRADING_KW["tippolar210c200nest"] = "tip_affine"
 NEST_RUNGS["tippolar210c200nest"] = [200.0, 100.0, 50.0, 25.0, 12.5]
 NEST_BASE_SEED = "tiptest"           # base rungs start from the converged tiptest-graded rung of the same tag + target
-# Linear algebra of the Newton loop (2026-10-12): "dense" (default, unchanged: dense K, scipy.linalg.solve, dense
+# Linear algebra of the Newton loop: "dense" (default, unchanged: dense K, scipy.linalg.solve, dense
 # eigh) or "sparse" (vares_sparse.py: same element calls, CSR K, SuperLU, Lanczos min-eig diagnostic) -- memory
 # ~O(nnz) instead of 3 (2N)^2 x 8 B, so rungs below 12.5 mm fit.  Same tolerance, damping and line search.
 # 4th nested level (2026-10-12, sparse solver): B3 8.84 mm (tag h009, from h018), A3 6.25 mm (h006, from h012)
@@ -141,7 +141,7 @@ SPARSE = SOLVER == "sparse"
 if SPARSE:
     import vares_sparse as VS                # noqa: E402
 # Retry of a nested BASE rung from the converged base rung of the OTHER family (same nested study), P1-sampled -- the
-# nested analogue of SEED_FROM.  50 <- 70.7 (2026-10-11): from the tiptest P1 seed, h050 stalled at ||R|| 7.53
+# nested analogue of SEED_FROM.  50 <- 70.7: from the tiptest P1 seed, h050 stalled at ||R|| 7.53
 # (lambda -> 6e4, indefinite tangent) with two elements within 2 mm of the tip blown up to flat/spatial area 1.6
 # (0.985 elsewhere); first attempt kept as h050_stall_tipblowup_p1tiptest/.  First start only (setup.npz frozen).
 # value: h (same nested study) or (grading, h).  100 <- converged nested tippolar h071 (no converged 100 mm rung of
@@ -196,7 +196,7 @@ def nested_seed(target, grading, h, nm, X_leaf):
         return X0, f"p1:{g_src}/{MS.tag(h_src)}", h_src
     anc = os.environ.get("MESHSTUDY_NEST_SEED_ANCESTOR")
     if anc:
-        # 2026-10-12 (user: run h012 and h006 at the same time): seed from a converged ANCESTOR rung, prolongated level
+        # seed from a converged ANCESTOR rung, prolongated level
         # by level through the intermediate store meshes (the same exact midpoint rule as below, applied repeatedly).
         h_a = float(anc)
         p = os.path.join(study_root(target, grading), MS.tag(h_a), "pattern.npz")

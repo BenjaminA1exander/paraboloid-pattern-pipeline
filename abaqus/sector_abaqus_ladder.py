@@ -58,7 +58,17 @@ ROOT = os.environ.get("NESTED_ABQ_SECTOR_ROOT",
 SUFFIX, LAPTOP_CPUS, LAPTOP_DOMAINS = "_dp", 2, 2
 ROT_EQ = True            # also constrain the rotational dofs 4-6 across the seam (the TIE MPC ties all active dofs)
 TIP_HELD_DOFS = ((1, 2), (4, 5))
-# CORNER_ROT_EQ -- with the cyclic partner of every +seam node.
+# CORNER_ROT_EQ: the seam pair AT THE RIM (the two seam-rim corner nodes)
+# was left out of the cyclic *Equation set because the rim holds its translations -- but nothing held its ROTATIONS, so
+# the corner acted as a free double hinge (in the real dish the two corner nodes are one sewn point).  Harmless with
+# large corner elements; on the seam+tip L4 mesh (0.39 mm seam elements) every uniform failure (prs x2, stl1 x2) was
+# at the corner element 73 / 1035372.  True: write the ROTATION equations (dofs 4-6 only; translations stay rim-held)
+# for the corner pairs.  Default False keeps every earlier deck reproducible; sector_seamtip_ladder.py sets it.
+CORNER_ROT_EQ = False
+
+
+def build_sector(d, Xf, topo):
+    """One gore -- gore 0 of A.build_flower(d, Xf, topo) -- with the cyclic partner of every +seam node.
     Same keys as build_flower (nodes, tris, drag, drag_all, seal, rim_ids, ...) plus the sector fields."""
     ng = int(d["n_gores"])
     th = np.pi / ng
