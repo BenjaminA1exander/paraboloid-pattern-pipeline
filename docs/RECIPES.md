@@ -31,7 +31,9 @@ Gradient path: the solver differentiates its Newton equilibrium through a Sherma
 cross-checks it once against the implicit adjoint of the damped Picard map; when the cosine is below 0.99 it
 falls back to the Picard adjoint. On the near-singular stage-2 states of L2 and L3 the Picard adjoint does
 not converge (jax_fdm reports the unconverged solves at exit), and on L2 the fallback made no progress in
-1000 steps. `JAXFDM_NEWTON_GRAD_FORCE=1` keeps the Sherman-Morrison adjoint; the L2 stage-3 run uses it.
+1000 steps. `JAXFDM_NEWTON_GRAD_FORCE=1` keeps the Sherman-Morrison adjoint; the L2 stage-3 run uses it. Check: the L0
+stage 3 re-run with the switch (laptop, 2026-10-19) ends at the same state as the published L0 run (objective
+1.2e-20 against 1.5e-20, both round-off; nodes within 1.5e-5 R, force densities within 1.6e-5).
 
 Drivers: `run_paraboloid_unstr_ladder.py` (stages 1-2), `run_stage3_local.py` (stage 3,
 laptop), `euler_nest_stage3.py` with `nest4321_stage3.sbatch` (stage 3, Euler), followed by
