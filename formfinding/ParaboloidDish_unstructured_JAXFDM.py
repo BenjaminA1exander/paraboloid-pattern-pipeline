@@ -153,6 +153,8 @@ R     = float(os.environ.get("JAXFDM_R", "3.0"))
 DEPTH = float(os.environ.get("JAXFDM_DEPTH", "1.5"))
 
 # Every edge starts at this force density; bounds are role-specific (hoop / meridional / fan).
+#An edge is called "mer" when cos²a ≥ 1/2 and "hoop" otherwise
+#These bounds were never needed and so not referenced in the paper.
 START_Q      = 1.0
 FAN_Q_BOUNDS = (0.02, 500.0)     # apex spokes (meridional level 0)
 MER_Q_BOUNDS = (0.010, 600.0)    # ring-to-ring meridional edges
@@ -170,7 +172,8 @@ W_APEX  = float(os.environ.get("JAXFDM_W_APEX", "1.0"))
 OBJECTIVE = os.environ.get("JAXFDM_OBJECTIVE", "nodal").strip().lower()
 W_NORMAL = float(os.environ.get("JAXFDM_W_NORMAL", "1.0"))
 # Optional weight on TANGENTIAL drift from the seed (normal objective only). 0 = sliding is free;
-# W_TAN = 1 with W_NORMAL = 1 is, to first order, the nodal objective again.
+# W_TAN = 1 with W_NORMAL = 1 is, to first order, the nodal objective again. 
+# These were all experimented with. Use as needed.
 W_TAN = float(os.environ.get("JAXFDM_W_TAN", "0.0"))
 # Element-quality penalty, ported verbatim from BWBCentrebody_v8_pressure_JAXFDM.Model.mesh_pen (the
 # astigmatic reflector's f_A + f_S): one-sided Huber penalties on triangle area relative to its OWN
@@ -208,7 +211,7 @@ LR          = float(os.environ.get("JAXFDM_LR", "0.02"))     # trust radius seed
 PATIENCE    = int(os.environ.get("JAXFDM_PATIENCE", "60"))
 # ABSOLUTE improvement threshold (see the acceptance test in the outer loop: obj < best - TOL).
 # It is absolute, not relative, so it stops meaning "has it stopped improving?" and starts
-# meaning "is it below 1e-7?" as soon as the objective itself falls under the tolerance -- a
+# meaning "is it below 1e-7?" as soon as the objective itself falls under the tolerance, a
 # well-fitted dish reaches obj ~1e-8 (shape rms ~1e-4 in form units, squared), i.e. ten times
 # BELOW this gate, after which no further improvement can ever be registered and the run
 # terminates on patience with the line search still healthy.  A mesh-refinement study sees this
@@ -250,7 +253,7 @@ AXISYM_Q = True
 AXISYM_STATE_PROJECT = False
 
 # ---- L-BFGS knobs ----------------------------------------------------------------------------
-LBFGS_M      = int(os.environ.get("JAXFDM_LBFGS_M", "10"))
+LBFGS_M      = int(os.environ.get("JAXFDM_LBFGS_M", "10"))  # sometimes put it up to 50, unsure if that was needed.
 LBFGS_LS_MAX = int(os.environ.get("JAXFDM_LBFGS_LS_MAX", "8"))
 LBFGS_CAP    = float(os.environ.get("JAXFDM_LBFGS_CAP", "10.0"))
 LBFGS_CURV   = float(os.environ.get("JAXFDM_LBFGS_CURV", "1e-4"))
