@@ -2,13 +2,21 @@
 chen2022_constitutive.py
 
 Pure-Python port of the Chen et al. (2022) anisotropic membrane
-constitutive law, as implemented in ``umat_chen2022.for``.
+constitutive law, as implemented in ``umat_chen2022.for``. 
+Again a fully independant implementation using no external code. 
+Validated against the original paper, then in abaqus, before here.
 
 Reference
 ---------
-Chen et al. (2022) "Strength analysis of composite envelope structures
-considering the tension-shear coupling and cutting pattern effect",
-Thin-Walled Structures 180, 109919.
+Longlong Chen, Wujun Chen, Chengjun Gao, Shiping Li, Yinbo Song, Haitao Zhao, Jianhui Hu, Bing Zhao,
+Strength analysis of composite envelope structures considering the tension–shear coupling and cutting pattern effect,
+Thin-Walled Structures,
+Volume 180,
+2022,
+109919,
+ISSN 0263-8231,
+https://doi.org/10.1016/j.tws.2022.109919.
+
 
 Scope of this port
 ------------------
@@ -16,14 +24,15 @@ INCLUDED
   - Biaxial polynomial branch (5 terms each in sigma_x and sigma_y)
   - Uniaxial fallback branch (2 terms each)
   - "Drop past vertex" guard on each parabolic branch
-  - Linear regularised fallback when both branches non-positive
+  - Linear regularised fallback when both branches non-positive, placed instead of original wrinkling formulation
   - Stress-coupled shear modulus  G = c0 + kG*(sigma_x + sigma_y)
-  - Consistent tangent (DDSDDE) -- analytical, branch-aware
-  - Tsai-Wu-style failure factor (Eq. 19 of the paper)
+  - Consistent tangent (DDSDDE) -- analytical, branch-aware, pretty tricky to get working nicely.
+  - Tsai-Wu-style failure factor (Eq. 19 of the paper, same coefficients)
 
-OMITTED (per user request)
+OMITTED (Compared to abaqus vumat implementation)
   - Wrinkling / taut / slack treatment (the spectral regularisation
     and the slack-mode small-stiffness substitution)
+    Unnecessary for obvious reasons.
 
 Conventions
 -----------
@@ -408,7 +417,7 @@ def chen_stress_covariant(E_cov: np.ndarray,
     (treated as a per-iteration CONSTANT) and minimising the
     covariant residual r_k = S^{ij}(X) - S^{ij}_target.  At
     convergence, pushing S^{ij} back to physical via T_E.T-inverse
-    recovers exactly the user's physical target -- so the optimiser
+    recovers exactly the physical target -- so the optimiser
     sees a polynomial-conditioned problem and the user keeps a
     physical-units target interface.
 
