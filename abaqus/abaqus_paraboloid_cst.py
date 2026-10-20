@@ -73,7 +73,7 @@ sys.path.insert(0, HERE)
 
 import paraboloid_dish_config as CFG                  # noqa: E402
 import inflate_paraboloid_chain as IC                 # noqa: E402  validated recipe constants
-import MeshStudy_paraboloid_vares as MS               # noqa: E402
+import vares_study as MS               # noqa: E402
 import MeshStudy_paraboloid_vares_ckpt as CK          # noqa: E402
 from chen2022_constitutive import UMAT_PROPS, chen_stress   # noqa: E402
 

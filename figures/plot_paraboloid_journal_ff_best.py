@@ -11,7 +11,7 @@ rebuilt on the BEST, most up-to-date optimised form-finding state and made fully
       (quadratic MLS of the nodal virial, rho = 8 h_ref sqrt(h/h_ref), h_ref = 159 mm -- the paper recovery)
   (d) mesh convergence of the best optimised state of each nested rung: full-mesh area-weighted rms of N/N_exact - 1
       (%) vs degrees of freedom (3 x free nodes); numbers = observed order in h per refinement
-      (L0-L2 stage 2; L3 as above; values from temp/rim_onsurface_verify/optimised_vs_solved_mean_rms.json)
+      (L0-L2 stage 2; L3 as above; values from table3_formfinding.score, cached in rim_onsurface_verify/table3_scores.json)
 
 Run (base env): python plot_paraboloid_journal_ff_best.py
 """
@@ -39,13 +39,13 @@ TEMP = CFG.TEMP_DIR
 BD = f"{TEMP}/journal_ff_best"
 STATE = f"{BD}/curv_17089_step19250_projected_cst.npz"
 TRAJ = f"{BD}/fig_paraboloid_tension_trajectories_fit_cst_lines.npz"
-CONV_JSON = f"{TEMP}/rim_onsurface_verify/optimised_vs_solved_mean_rms.json"
 BEST = [f"{TEMP}/paraboloid_edge_constq_nest{n}_odt_qual1e-4_warm/jaxfdm_paraboloid_dish.npz" for n in ("289", "1105", "4321")]
 BEST += [f"{TEMP}/rim_onsurface_verify/curv_17089_step19250.npz"]
 PANEL_D = os.environ.get("PANEL_D", "rms")             # rms: rms + orders (log-log); conv: mean of N/N_exact - 1; l1: L1 norm
 SMOOTH = os.environ.get("SMOOTH", "0") == "1"          # monotone cubic (PCHIP) curve through the points, in log DOF
-OUT = os.environ.get("OUT", f"{TEMP}/fig_paraboloid_journal_ff_best" + ({"conv": "_conv", "l1": "_l1"}.get(PANEL_D, ""))
+OUT = os.environ.get("OUT", f"{TEMP}/results/figures/fig_paraboloid_journal_ff_best" + ({"conv": "_conv", "l1": "_l1"}.get(PANEL_D, ""))
                      + ("_smooth" if SMOOTH else ""))
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
 R, DEP = LR.R, LR.D
 F_FOC = R * R / (4 * DEP)
 MM = 2500.0 / R
@@ -181,13 +181,8 @@ ax.legend(handles=[Line2D([], [], ls="none", marker="^", mfc="none", mec=C_Y, ms
 
 # ---- (d) mesh convergence of the best optimised state of each rung -------------------------------------------------
 ax = box(X_D, SQ_PLOT)
-cache = json.load(open(CONV_JSON))
-rows = []
-for path in BEST:
-    c = dict(cache[f"{os.path.abspath(path)}|{os.path.getmtime(path):.0f}"])
-    s_ = np.load(path, allow_pickle=True)
-    c["ndof"] = 3 * (len(s_["vertices"]) - len(s_["fixed"]))
-    rows.append(c)
+import table3_formfinding as T3                                   # noqa: E402
+rows = [T3.score_cached(path) for path in BEST]                    # the Table 3 measures of each state (cached)
 dof = np.array([c["ndof"] for c in rows], float)
 
 

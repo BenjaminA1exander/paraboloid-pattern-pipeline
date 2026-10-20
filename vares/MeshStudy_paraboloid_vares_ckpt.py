@@ -1,7 +1,7 @@
 r"""MeshStudy_paraboloid_vares_ckpt.py -- checkpointed, resumable worker for further rungs of the
-paraboloid VaReS mesh study (MeshStudy_paraboloid_vares.py).
+paraboloid VaReS mesh study (conventions in vares_study.py).
 
-Same setup as MeshStudy_paraboloid_vares.run_one (same imports in the same order, same mesher,
+Same setup as the first, dense driver of the study (same imports in the same order, same mesher,
 seed, pins, targets) and the same Newton loop as S.run_inner_loop, copied line for line
 except that:
   * the full loop state (X, lam, stall, n_indef, R_history, k) is written atomically after
@@ -47,7 +47,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
 import paraboloid_dish_config as CFG            # noqa: E402
-import MeshStudy_paraboloid_vares as MS         # noqa: E402
+import vares_study as MS         # noqa: E402
 
 # rungs beyond MS.LADDER, continuing the sqrt(2) ladder
 FINE = [17.7, 12.5]
@@ -294,7 +294,7 @@ def load_profile(target):
 
 
 def configure(target=None, grading=None):
-    """Point MeshStudy_paraboloid_vares at a target's study (root + profile for leaf_half_width).
+    """Point vares_study at a target's study (root + profile for leaf_half_width).
     Plot scripts call this; the target defaults to $MESHSTUDY_TARGET (linearfit), the grading to
     $MESHSTUDY_GRADING (none)."""
     global TARGET, SUFFIX, GRADING
@@ -477,7 +477,7 @@ def main():
         raise SystemExit(f"{out} exists -- not overwriting")
     _lock(d)
 
-    # same imports, same order as MS.run_one
+    # same imports, same order as the first driver
     import paraboloid_profile as pp                 # noqa: F401 (import order as run_one)
     import vares_settings as S
     import vares_membrane as VM

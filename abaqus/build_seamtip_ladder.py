@@ -73,7 +73,7 @@ GRADING = "seamtip_s625_g04_tippolar210"
 
 
 def tag(h):
-    return "h%03d" % int(round(h))              # = MeshStudy_paraboloid_vares.tag
+    return "h%03d" % int(round(h))              # = vares_study.tag
 
 
 PROF = PC.extract_paraboloid_cst(gore=GORE)[0]

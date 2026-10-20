@@ -2,7 +2,7 @@
 paraboloid_profile.py
 
 Bridge from the single-chamber paraboloid-dish form-finder
-(``ParaboloidDish_pressure_JAXFDM.py``) to the VaReS cutting-pattern optimiser --
+(the form finder of ``formfinding/``) to the VaReS cutting-pattern optimiser --
 the pure-dish analogue of ``formfound_profile.py`` (whose loader is specific to
 the two-chamber sphere-dish npz; this module reuses its ``MembraneProfile``
 machinery unchanged on the paraboloid npz).
@@ -81,7 +81,7 @@ def load_paraboloid(npz_path: str = CFG.FORM_NPZ):
 
 def _enclosed_volume(coords, faces_tri, z_ref=0.0):
     """Dome volume over the rim plane z=z_ref (projected-area form) -- numpy
-    copy of ParaboloidDish_pressure_JAXFDM.enclosed_volume so p_true = GAS_K/V
+    copy of the form finder's enclosed_volume so p_true = GAS_K/V
     uses the form-finder's own volume convention."""
     vi = coords[faces_tri[:, 0]]
     vj = coords[faces_tri[:, 1]]

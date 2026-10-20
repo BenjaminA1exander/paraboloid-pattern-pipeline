@@ -1,0 +1,31 @@
+{
+ "ok": true,
+ "R": 1.2165091499157082e-07,
+ "tol": 1e-07,
+ "R_over_tol": 1.2165091499157084,
+ "dx_newton_mm": 2.994158137897455e-08,
+ "dx_newton_max_mm": 4.6046596893549915e-10,
+ "R_trial": [
+  1.2294221839991415e-07,
+  1.3595078333986893e-07,
+  1.409015566885023e-07,
+  1.4739656235666107e-07
+ ],
+ "alphas": [
+  1.0,
+  0.5,
+  0.25,
+  0.125
+ ],
+ "best_gain": -0.01061482692861615,
+ "checks": {
+  "near_tol": true,
+  "small_correction": true,
+  "no_descent": true
+ },
+ "rule": "||R|| <= 10 tol, |dX| <= 1e-06 mm, no alpha in (1.0, 0.5, 0.25, 0.125) lowers ||R|| by > 0.01",
+ "rung": "h012",
+ "grading": "tippolar210nest",
+ "its": 158,
+ "R_history_last": 1.2165093094925502e-07
+}

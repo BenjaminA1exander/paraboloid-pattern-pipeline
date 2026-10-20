@@ -11,8 +11,8 @@ the two finest rungs, p = -2 x slope, is printed for every series.
       paraboloid.  Source: history.csv of the nested runs (L0-L2), the published L3 value, and the volume errors of
       paraboloid_ff_subsection.tex (provenance block).
   (c) Sec. 3.4.1, Table 3 / Fig. 7(d): recovered resultants N_phi, N_theta, L1 and L2 area-weighted norms against the
-      exact statics.  Source: temp/rim_onsurface_verify/optimised_vs_solved_mean_rms.json (L0-L2 optimised states,
-      L3 = curv_17089_step19250).
+      exact statics.  Source: table3_formfinding.score_cached on the Table 3 states (L0-L2 after stage 2,
+      L3 after stage 3).
   (d) Sec. 3.4.2, Table 4 / Fig. 8(c): VaReS cutting pattern on the nested gore chain: |Delta/Delta_inf - 1| (Delta_inf
       the Celik extrapolation of the three finest), the successive pattern change delta X (L1, L2, % of Delta_inf),
       and the stress mismatch e_sigma minus its extrapolated limit.  Source: results/convergence_loglog/conv_table.json
@@ -21,12 +21,13 @@ the two finest rungs, p = -2 x slope, is printed for every series.
       VaReS and the uniform-shrinkage pattern, |f - f_inf| / f_inf with f_inf the Celik limit of the three finest.
       Source: results/abaqus_ladder_seamtip/vares_vs_uniform/vu_summary.json.
 
-Run (jaxfdm env or base): python plot_convergence_loglog_all.py
-Out: results/convergence_loglog/fig_convergence_loglog_all.{png,pdf} and orders.txt
+Run (base env): python plot_convergence_loglog_all.py
+Out: <data>/results/convergence_loglog/fig_convergence_loglog_all.{png,pdf} and orders.txt
 """
 import glob
 import json
 import os
+import sys
 
 import numpy as np
 import matplotlib
@@ -35,8 +36,10 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TEMP = os.path.join(HERE, "..", "..", "temp")
-OUT = os.path.join(HERE, "results", "convergence_loglog")
+sys.path.insert(0, os.path.dirname(HERE))
+import paraboloid_dish_config as CFG                   # noqa: E402
+TEMP = CFG.TEMP_DIR                                    # the pipeline data root (PIPELINE_DATA)
+OUT = os.path.join(TEMP, "results", "convergence_loglog")
 os.makedirs(OUT, exist_ok=True)
 BLUE, ORANGE, GREY, BLACK = "#2456c4", "#d97706", "#6b7280", "#111827"
 lines = []
@@ -85,7 +88,7 @@ axs = axs.ravel()
 # ---------------------------------------------------------------- (a) Sec. 3.1 limit point
 ax = axs[0]
 ax.set_title("(a) Sec. 3.1, Fig. 3e: cap limit point", loc="left")
-D = os.path.join(HERE, "results", "fdm_limit_point", "bowling_pin")
+D = os.path.join(TEMP, "results", "fdm_limit_point", "bowling_pin")
 P_STAR = 2.0 * np.sqrt(3.0)
 
 
@@ -141,13 +144,8 @@ tidy(ax, "degrees of freedom", "upper right")
 # ---------------------------------------------------------------- (c) Sec. 3.4.1 resultants
 ax = axs[2]
 ax.set_title("(c) Sec. 3.4.1, Table 3 / Fig. 7d: resultants", loc="left")
-J = json.load(open(os.path.join(TEMP, "rim_onsurface_verify", "optimised_vs_solved_mean_rms.json")))
-rows = {}
-for k, v in J.items():
-    name = os.path.basename(k.split("|")[0])
-    rows[(name, v["ne"])] = v
-tab = [rows[("jaxfdm_paraboloid_dish.npz", 528)], rows[("jaxfdm_paraboloid_dish.npz", 2112)],
-       rows[("jaxfdm_paraboloid_dish.npz", 8448)], rows[("curv_17089_step19250.npz", 33792)]]
+import table3_formfinding as T3                        # noqa: E402
+tab = [T3.score_cached(os.path.join(TEMP, rel)) for _, rel in T3.STATES_PAPER]   # the Table 3 measures (cached)
 for key, lab, col, mk, ls in (("aphi", r"$N_\phi$, $\|e\|_1$", BLUE, "o", "-"), ("rphi", r"$N_\phi$, $\|e\|_2$", BLUE, "o", "--"),
                               ("ath", r"$N_\theta$, $\|e\|_1$", ORANGE, "s", "-"), ("rth", r"$N_\theta$, $\|e\|_2$", ORANGE, "s", "--")):
     series(ax, dof3, [100 * r[key] for r in tab], lab, color=col, marker=mk, ms=3.5, lw=1.1, ls=ls,
@@ -185,7 +183,7 @@ tidy(ax, r"degrees of freedom $N$", "upper right")
 # ---------------------------------------------------------------- (e) Sec. 3.4.3 Abaqus
 ax = axs[4]
 ax.set_title("(e) Sec. 3.4.3, Table 5 / Fig. 9d: Abaqus inflation", loc="left")
-S = json.load(open(os.path.join(HERE, "results", "abaqus_ladder_seamtip", "vares_vs_uniform", "vu_summary.json")))
+S = json.load(open(os.path.join(TEMP, "results", "abaqus_ladder_seamtip", "vares_vs_uniform", "vu_summary.json")))
 nel = np.array([9354240 / 4 ** k for k in (3, 2, 1, 0)], float)       # h100, h050, h025, h012
 for pat, col in (("vares", BLUE), ("uniform", ORANGE)):
     for meas, mk, ls in (("warp_L1", "o", "-"), ("weft_L1", "s", "-"), ("warp_L2", "o", "--"), ("weft_L2", "s", "--")):

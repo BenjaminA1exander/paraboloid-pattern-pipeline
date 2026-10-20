@@ -1,7 +1,7 @@
 r"""abaqus_ladder_seamband.py -- field measures of a settled Abaqus/Explicit VaReS run, over the whole gore and with fixed
 physical bands along the seams excluded.
 
-Definitions are those of plot_abaqus_sector_vares_asymptote.py (positions = mean over the last 30 s of field frames,
+Definitions are those of the sector ladder figures (positions = mean over the last 30 s of field frames,
 the settle gate's window; stresses = last frame, section-point mean; sigma* = element-centre target):
   apex_err   apex height minus the target apex height (mm) -- a point measure, the same with or without bands
   shape_rms  area-weighted rms normal deviation from the target surface (mm), exact P1 integral per element
@@ -16,11 +16,14 @@ Works for the one-gore sector (flower.npz has n_gore_nodes) and the 24-gore mode
 import glob
 import os
 import re
+import sys
 
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TEMP = os.path.normpath(os.path.join(HERE, "..", "..", "temp"))
+sys.path.insert(0, os.path.dirname(HERE))
+import paraboloid_dish_config as CFG                 # noqa: E402
+TEMP = CFG.TEMP_DIR                                   # the pipeline data root (PIPELINE_DATA)
 SECTOR = os.path.join(TEMP, "abaqus_sector_mirror")
 FULL = os.path.join(TEMP, "abaqus_prod_tippolar210nest_mirror")
 TAGS = ("h100", "h050", "h025", "h012", "h006")
@@ -86,7 +89,6 @@ def load(jd, v="vares", force=False):
     S = r["S"][:len(T), :2]
     Tt = fl["T"][np.arange(len(T)) % ne][:, :2]
     if force:
-        import paraboloid_dish_config as CFG
         S = r["SF"][:len(T), :2] / CFG.T_FABRIC                    # membrane resultant per reference thickness
     # distance of each element centroid from the nearest seam (any gore)
     phic = np.arctan2(Xs[:, 1].mean(), Xs[:, 0].mean())

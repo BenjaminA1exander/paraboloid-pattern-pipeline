@@ -37,18 +37,30 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import plot_seamtip_asymptote_combined as AC                         # noqa: E402
-from plot_abaqus_sector_vares_asymptote import classify              # noqa: E402
-from plot_vares_shape_asymptote import plt, Line2D                   # noqa: E402
+import matplotlib                                                    # noqa: E402
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt                                      # noqa: E402
+from matplotlib.lines import Line2D                                  # noqa: E402
+import abaqus_ladder_seamband as SB                                   # noqa: E402
+from asymptote_fit import classify                                   # noqa: E402
+
+TEMP = SB.TEMP                                                       # the pipeline data root
+EULER = os.path.join(TEMP, "abaqus_sector_seamtip_mirror")           # mirrors of the Euler / DelftBlue sector roots
+DB = os.path.join(TEMP, "abaqus_sector_seamtip_db_mirror")
+HNOM = {"h100": 100.0, "h050": 50.0, "h025": 25.0, "h012": 12.5, "h006": 6.25}
+_ROOT = {"vares": {"h100": EULER, "h050": EULER, "h025": EULER, "h012": EULER, "h006": DB},
+         "uniform": {"h100": EULER, "h050": EULER, "h025": EULER, "h012": EULER}}
+SETTLED = {"vares": {"h100": 1, "h050": 1, "h025": 1, "h012": 2, "h006": 2},   # the import the settle chain declared
+           "uniform": {"h100": 2, "h050": 4, "h025": 6, "h012": 7}}            # settled (asserted when recomputing)
 
 F_MM, P_MPA, T_MM, R_MM = 1250.0, 0.05, 0.9, 2500.0
 WITH_L4 = "--with-l4" in sys.argv
-UNIFORM_L4 = os.path.join(AC.TEMP, "abaqus_sector_seamtip_v4_mirror")       # fill in when the Euler chain settles
+UNIFORM_L4 = os.path.join(TEMP, "abaqus_sector_seamtip_v4_mirror")       # fill in when the Euler chain settles
 LEVELS = {"vares": ["h100", "h050", "h025", "h012"] + (["h006"] if WITH_L4 else []),
           "uniform": ["h100", "h050", "h025", "h012"] + (["h006"] if WITH_L4 else [])}
-ROOT = {"vares": dict(AC.ROOT["vares"]), "uniform": dict(AC.ROOT["uniform"], h006=UNIFORM_L4)}
+ROOT = {"vares": dict(_ROOT["vares"]), "uniform": dict(_ROOT["uniform"], h006=UNIFORM_L4)}
 PAT = [("vares", "VaReS pattern", "#0072B2", "o", "-"), ("uniform", "Uniform shrinkage", "#D55E00", "s", (0, (5, 2)))]
-OUTD = os.path.join(HERE, "results", "abaqus_ladder_seamtip", "vares_vs_uniform")
+OUTD = os.path.join(TEMP, "results", "abaqus_ladder_seamtip", "vares_vs_uniform")
 CACHE = os.path.join(OUTD, "vares_vs_uniform_cache.json")
 RBINS = np.linspace(0.0, 1.0, 41)
 # maps colour scale: magma -- perceptually
@@ -65,17 +77,17 @@ def exact_sigma(r):
     return np.c_[P_MPA * F_MM * u, 2.0 * P_MPA * F_MM * u * (1.0 - 1.0 / (2.0 * u ** 2))] / T_MM
 
 
-abs_integral = AC.SB.abs_integral
+abs_integral = SB.abs_integral
 
 
 def element_fields(v, t):
     jd = os.path.join(ROOT[v][t], t, f"{v}_dp")
-    npz = AC.SB.last_job(jd, v)
+    npz = SB.last_job(jd, v)
     if npz is None:
         return None
-    if t in AC.SETTLED.get(v, {}):
+    if t in SETTLED.get(v, {}):
         k = int(os.path.basename(npz).split("_")[1][3:])
-        assert k == AC.SETTLED[v][t], f"{jd}: last import stl{k}, settled one is stl{AC.SETTLED[v][t]}"
+        assert k == SETTLED[v][t], f"{jd}: last import stl{k}, settled one is stl{SETTLED[v][t]}"
     r = np.load(npz, allow_pickle=True)
     fl = np.load(os.path.join(jd, "flower.npz"))
     T, ne, n = fl["tris"], int(fl["n_el_per_gore"]), int(fl["n_gore_nodes"])
@@ -246,7 +258,7 @@ def fig_maps(C):
     for v, name, col, _, _ in PAT:
         for kc, klab, m, ls in QS:
             tags = LEVELS[v]
-            h = np.array([AC.HNOM[tt] for tt in tags])
+            h = np.array([HNOM[tt] for tt in tags])
             N = np.array([C[v][tt]["n_el"] for tt in tags], float)
             f = np.array([C[v][tt][f"{kc}_L1"] for tt in tags])
             kind = classify(h, f)[0]                                # pre-set rule decides converging / not
@@ -301,7 +313,7 @@ def fig_convergence(C):
             ax = fig.add_axes([(20 + 68 * c_) / W, (68 - 50 * r_) / H, 50 / W, 38 / H])
             for v, name, col, m, ls in PAT:
                 tags = LEVELS[v]
-                h = np.array([AC.HNOM[t] for t in tags])
+                h = np.array([HNOM[t] for t in tags])
                 N = np.array([C[v][t]["n_el"] for t in tags], float)
                 f = np.array([C[v][t][f"{k}_{nk}"] for t in tags]) * 100
                 kind, pf, se, lim, band, d = classify(h, f)

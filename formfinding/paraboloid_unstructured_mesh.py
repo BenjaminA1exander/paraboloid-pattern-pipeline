@@ -1,7 +1,7 @@
 r"""paraboloid_unstructured_mesh.py -- unstructured (gmsh) seed mesh for
 ParaboloidDish_unstructured_JAXFDM.py, the unstructured rung of the paraboloid mesh study.
 
-Same seed GEOMETRY as ParaboloidDish_pressure_JAXFDM.build_disk_topology (every node ON the target
+Same seed geometry as the earlier structured-mesh solver (every node ON the target
 paraboloid z = DEPTH(1 - r^2/R^2), rim circle r = R pinned at z = 0, one node exactly at the apex),
 but the membrane is a Frontal-Delaunay triangulation of near-uniform 3-D size h instead of the
 polar n_theta x n_rings net:

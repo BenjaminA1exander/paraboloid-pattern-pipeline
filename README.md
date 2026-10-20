@@ -57,6 +57,7 @@ first. `PIPELINE_DATA` points at the data root (default `data/`).
 
 `paraboloid_dish_config.PY_BASE` / `PY_JAX` name the two interpreters for the drivers that
 start the solver as a subprocess (`PIPELINE_PY_BASE`, `PIPELINE_PY_JAX`).
+`ABAQUS_CMD` names the Abaqus launcher for the deck drivers (default `C:\SIMULIA\Commandsbaqus.bat`).
 
 ## Stage 1: form finding (`formfinding/`)
 
@@ -69,10 +70,10 @@ start the solver as a subprocess (`PIPELINE_PY_BASE`, `PIPELINE_PY_JAX`).
 | stage 3 | `run_stage3_local.py` (laptop), `euler_nest_stage3.py` + `*.sbatch` (Euler) | curvature term of Eq. 27, W_QUAL = 0, W_CURV = mean(d^2)/mean(e^2) at the stage-2 state |
 | self-stress projection | `project_self_stress.py`, `project_self_stress_cst.py` | Eq. 28: minimum complementary energy with constant-stress triangles |
 | recovery | `local_stress_recovery.py` (+ `cut_extraction.py`) | nodal virial, quadratic MLS, support rho = 8 h_ref sqrt(h/h_ref) (Eq. 30) |
-| checks | `test_virial_recovery_ceiling.py`, `recover_stress_l2.py`, `plot_paraboloid_optimised_vs_solved_nested.py` | extraction ceiling with exact inputs, global L2 recovery (fails, documented), optimised state against the exact equilibrium on the target |
 
-Figure 7 and Table 3: `figures/plot_paraboloid_journal_ff_best.py`; the table values are in
-`data/rim_onsurface_verify/optimised_vs_solved_mean_rms.json`.
+Figure 7: `figures/plot_paraboloid_journal_ff_best.py`. Table 3: `figures/table3_formfinding.py`
+(the recovery above applied to each rung's state; scores cached in `data/rim_onsurface_verify/table3_scores.json`;
+`STAGE3=1` scores the stage-3 state of every rung, see `docs/RECIPES.md`).
 
 ## Stage 2: VaReS cutting pattern (`vares/`)
 
@@ -82,12 +83,12 @@ Figure 7 and Table 3: `figures/plot_paraboloid_journal_ff_best.py`; the table va
 | element | `vares_membrane.py` (residual and exact non-symmetric tangent of the stress mismatch, Eq. 34), `vares_kinematics.py`, `element_kinematics.py`, `element_types.py` (3-node triangle; the 4-node quad is kept for generality) |
 | linear algebra | `vares_sparse.py`: sparse assembly (bit-identical to the dense path), SuperLU solve with two refinement passes, parallel element assembly; `vares_roundoff.py`: the round-off-floor certificate of a rung whose residual cannot reach the tolerance in double precision |
 | target and gore | `paraboloid_profile_cst.py` (target stress from the form-found net, raw gore 0), `formfound_profile.py` and `paraboloid_profile.py` (meridian, gore lune, developed leaf, gmsh gore mesher), `gore_subdivision.py` and `build_gore_nested_ladder.py` (nested tip-graded gore meshes) |
-| driver | `MeshStudy_paraboloid_vares_ckpt.py`: the checkpointed, resumable worker for one rung (seed by prolongation of the parent pattern, geometric 3-dof pin, Levenberg-damped Newton to ||R|| < 1e-7 N/mm); `vares_nested_chain.py` runs a chain parent -> child; `certify_vares_rung.py` applies the certificate afterwards; `validate_vares_sparse.py` and `plot_vares_tangent_check.py` are the A/B checks of the sparse path and of the tangent |
+| driver | `vares_study.py` (study root, rung naming, leaf sampling), `MeshStudy_paraboloid_vares_ckpt.py`: the checkpointed, resumable worker for one rung (seed by prolongation of the parent pattern, geometric 3-dof pin, Levenberg-damped Newton to ||R|| < 1e-7 N/mm); `vares_nested_chain.py` runs a chain parent -> child; `certify_vares_rung.py` applies the certificate afterwards; `validate_vares_sparse.py` is the A/B check of the sparse path against the dense one |
 | seeds and set-up | `vares_settings.py` (Newton tolerance, budget, Levenberg schedule, line search), `vares_flatten.py` (least-squares edge-length flattening of the gore, the seed of a base rung), `vares_setup.py` (the geometric 3-dof pin, element-centre targets, residual field) |
-| earlier code | `legacy/`: the airship-envelope implementation these modules were consolidated from; not imported by the pipeline (only the dense loop of `MeshStudy_paraboloid_vares.run_one` still uses it) |
 
-Figure 8 and Table 4: `figures/plot_vares_journal_combined_flat.py` and
-`figures/table4_vares_convergence.py` (`data/results/convergence_loglog/conv_table.json`).
+Figure 8: `figures/plot_vares_journal_combined_flat.py` (panels a, b from `plot_chen_response_surface_journal.py`;
+pattern measures from `figures/vares_pattern_measures.py`, the asymptote fit from `figures/asymptote_fit.py`).
+Table 4: `figures/table4_vares_convergence.py` (`data/results/convergence_loglog/conv_table.json`).
 
 ### Regression test
 
@@ -96,7 +97,7 @@ re-solves from the shipped data and must reproduce `data/meshstudy_vares_cstraw_
 
 ```
 source env.sh
-MESHSTUDY_SOLVER=sparse python vares/MeshStudy_paraboloid_vares_ckpt.py --rung 200 --target cstraw \
+MESHSTUDY_SOLVER=sparse MESHSTUDY_MAX_IT=1000 python vares/MeshStudy_paraboloid_vares_ckpt.py --rung 200 --target cstraw \
     --grading tippolar210c200nest --root results/regression
 python tools/compare_patterns.py results/regression/h200/pattern.npz \
     data/meshstudy_vares_cstraw_tippolar210c200nestgrade/h200/pattern.npz
@@ -114,10 +115,28 @@ history to 1.5e-13 relative, converged pattern identical to 2.3e-13 mm.
 | material | `vumat_chen2022.for` | the Chen law as a VUMAT with the mixed stress-strain wrinkling criterion |
 | running | `euler_abaqus_runner.py` (+ `hold_ext.py`, `extend_asm_settle.py`) | the settle gates: rim reaction within 0.2 % of p pi R^2, kinetic/internal energy below 4e-7, no node moving more than 2e-6 D over the last T/4; double precision; mass-proportional damping scaled with the mesh mass |
 | extraction | `extract_paraboloid_cst_odb.py` | run under Abaqus Python: coordinates, section forces SF, wrinkle state, energy histories |
-| measures | `abaqus_ladder_seamband.py`, `figures/plot_abaqus_sector_vares_asymptote.py`, `figures/plot_seamtip_asymptote_combined.py` | area-weighted L1 and L2 norms of the normal deviation and of N/N_exact - 1 over the whole gore |
+| measures | `abaqus_ladder_seamband.py` | area-weighted L1 and L2 norms of the normal deviation and of N/N_exact - 1 over the whole gore |
 
-Figure 9 and Table 5: `figures/plot_seamtip_vares_vs_uniform.py` and
-`figures/plot_seamtip_cmame_main.py` (`data/results/abaqus_ladder_seamtip/vares_vs_uniform/vu_summary.json`).
+Figure 9 and Table 5: `figures/plot_seamtip_vares_vs_uniform.py` (maps, radial profiles, convergence with the
+Celik GCI, `table_vu.tex` and `vu_summary.json` in `data/results/abaqus_ladder_seamtip/vares_vs_uniform/`; the
+per-rung element fields are read from the shipped cache and maps, the Abaqus mirrors are only needed to recompute them).
+
+## Figures and tables
+
+Every script in `figures/` produces one figure or table of the paper and nothing else:
+
+| script | output |
+|---|---|
+| `plot_paraboloid_journal_ff_best.py` | Fig. 7 |
+| `table3_formfinding.py` | Table 3 |
+| `plot_vares_journal_combined_flat.py` | Fig. 8 |
+| `table4_vares_convergence.py` | Table 4 |
+| `plot_seamtip_vares_vs_uniform.py` | Fig. 9, Table 5 |
+| `plot_convergence_loglog_all.py` | the log-log convergence summary of every mesh study |
+
+Shared by them: `plot_chen_response_surface_journal.py` (the material surfaces of Fig. 8a, b and the journal
+rcParams), `vares_pattern_measures.py` (pattern measures), `asymptote_fit.py` (asymptote fit and convergence rule).
+Outputs go to `data/results/figures/` and `data/results/abaqus_ladder_seamtip/vares_vs_uniform/`.
 
 ## Convergence summary
 
@@ -128,21 +147,22 @@ elements, with O(h) and O(h^2) slope guides, and prints the observed orders
 
 ## Data
 
-`data/` (33 MB) holds what the chain is built on and what the tables are read from:
+`data/` (115 MB) holds what the chain is built on and what the tables are read from:
 
 | folder | content |
 |---|---|
 | `paraboloid_mesh_odt`, `paraboloid_mesh_nested` | the 289-node base mesh and the nested L0-L3 meshes |
-| `paraboloid_edge_constq_nest*` | stage-2 run records (mesh, history, environment) of L0-L2; `*_stage3_curv`: the stage-3 records of L0-L2 and the final states of L1 and L2 (`docs/RECIPES.md`, stage 1) |
+| `paraboloid_edge_constq_nest*` | stage-2 run records and final states of L0-L2; `*_stage3_curv`: the stage-3 records of L0-L2 and the final states of L1 and L2 (`docs/RECIPES.md`, stage 1) |
+| `journal_ff_best`, `rim_onsurface_verify/curv_17089_step19250.npz` | the L3 state after stage 3 (raw and CST-projected) and the tension trajectories drawn in Fig. 7 |
 | `paraboloid_edge_constq_u4626_odt_qual1e-4_warm` | the CST-projected form-found net the VaReS target is extracted from |
 | `meshstudy_vares_cst/target_grid.npz` | the cached target stress grid (s, eta) |
 | `gore_nested_cstraw_tippolar210c200` | the nested gore meshes of the 200 mm chain (G0-G4 of Table 4) |
-| `meshstudy_vares_cstraw_tippolar210c200nestgrade` | the converged patterns of that chain; `..._tippolar210nestgrade/h100` the seed of its base rung |
-| `rim_onsurface_verify`, `results/` | the json caches behind Tables 3, 4 and 5; `stage3_all_rungs_scores.json`: the Table 3 measures of the stage-2 and stage-3 state of every rung |
+| `meshstudy_vares_cstraw_tippolar210c200nestgrade` | the converged patterns of that chain; `..._tippolar210nestgrade/h100` the seed of its base rung, `/h012` and `/h006` the 100 mm chain's finest rungs (Table 4, Fig. 8) |
+| `rim_onsurface_verify`, `results/` | the json caches behind Tables 3, 4 and 5, the per-element maps of the finest Abaqus rung (Fig. 9), the cap limit-point files of Sec. 3.1 drawn in the log-log summary; `stage3_all_rungs_scores.json`: the Table 3 measures of the stage-2 and stage-3 state of every rung |
 
-Not shipped (sizes): the form-found L3 state and its checkpoints, the 6.25 mm VaReS pattern
-(15 MB), the seam/tip Abaqus meshes (144 MB) and the Abaqus results (hundreds of GB on
-Euler). `docs/RECIPES.md` says where each lives and how it was produced.
+Not shipped (sizes): the checkpoints of the form-finding runs, the seam/tip Abaqus meshes
+(144 MB) and the Abaqus results (hundreds of GB on Euler). `docs/RECIPES.md` says where each
+lives and how it was produced. Every figure and table script runs from what is shipped.
 
 ## State of the code
 
@@ -151,6 +171,6 @@ published results. The numerical code is unchanged: the VaReS core (`element_typ
 `element_kinematics.py`, `vares_kinematics.py`, `vares_membrane.py`, `vares_sparse.py`,
 `vares_roundoff.py`) now also carries the shape functions, metrics, solver constants, pin
 rule and flattening seed that the worker used to import from the earlier airship-envelope
-modules (now in `vares/legacy/`, unused by the pipeline). The consolidation is protected
+modules (those modules are not part of this repository). The consolidation is protected
 by the regression test above (same 11 Newton iterations, converged pattern identical to
 round-off) and by `vares/validate_vares_sparse.py`.

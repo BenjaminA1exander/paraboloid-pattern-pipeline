@@ -72,7 +72,7 @@ def project_cst(V, T, E, fixed, q, nu=0.3):
                 eq_residual_rel=float(np.linalg.norm(A @ q_new[cols] - b) / np.linalg.norm(b)),
                 dq_rel_rms=float(np.sqrt(np.mean((q_new[cols] / q[cols] - 1) ** 2))),
                 q_min=float(q_new[cols].min()), n_negative=int((q_new[cols] <= 0).sum()),
-                rim_chords=int(len(E) - len(cols)))
+                rim_chords=int(len(E) - len(cols)), sigma_tri=sig.reshape(-1, 3))   # per-triangle (s11, s22, s12)
     q_out = q.copy(); q_out[cols] = q_new[cols]                    # rim chords (reactions) left as they are
     return q_out, info
 

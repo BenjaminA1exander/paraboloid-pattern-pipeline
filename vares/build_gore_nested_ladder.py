@@ -40,7 +40,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import MeshStudy_paraboloid_vares_ckpt as CK      # noqa: E402
-import MeshStudy_paraboloid_vares as MS           # noqa: E402
+import vares_study as MS           # noqa: E402
 import gore_subdivision as GS                     # noqa: E402
 import abaqus_paraboloid_cst as A                 # noqa: E402
 

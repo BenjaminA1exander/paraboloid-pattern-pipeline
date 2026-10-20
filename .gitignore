@@ -5,3 +5,5 @@ results/
 !figures/**/*.png
 quad_covariant_visualisation.png
 .pytest_cache/
+data/**/*.pdf
+data/**/*.svg

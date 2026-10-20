@@ -1,0 +1,32 @@
+{
+ "ok": true,
+ "R": 2.467650404784301e-07,
+ "tol": 1e-07,
+ "R_over_tol": 2.467650404784301,
+ "dx_newton_mm": 5.495948138416829e-06,
+ "dx_newton_max_mm": 4.214964248347954e-08,
+ "dx_newton_node_max_mm": 4.2653304144142524e-08,
+ "R_trial": [
+  2.469965952329382e-07,
+  2.794686858921108e-07,
+  3.0908174287575925e-07,
+  3.253402854898739e-07
+ ],
+ "alphas": [
+  1.0,
+  0.5,
+  0.25,
+  0.125
+ ],
+ "best_gain": -0.0009383612608138137,
+ "checks": {
+  "near_tol": true,
+  "small_correction": true,
+  "no_descent": true
+ },
+ "rule": "||R|| <= 10 tol, max nodal |dX| <= 1e-06 mm, no alpha in (1.0, 0.5, 0.25, 0.125) lowers ||R|| by > 0.01",
+ "rung": "h006",
+ "grading": "tippolar210nest",
+ "its": 258,
+ "R_history_last": 2.467651866743378e-07
+}

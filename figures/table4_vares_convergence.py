@@ -1,12 +1,15 @@
-"""Convergence table for the 200 mm nested chain (+ the 100 mm chain's 6.25 mm rung).
+"""table4_vares_convergence.py -- Table 4 of the paper (Sec. 3.4.2): the 200 mm nested chain (+ the 100 mm chain's 6.25 mm rung).
 Per rung: triangles, nodes, N = 2n - 3, Newton its, final ||r||, h_eff, Delta (compensation vs developed leaf, rigid
 removed, area weighted) in L1 and L2; successive pattern change (coarse P1 field at the fine nodes, rigid removed,
-area weighted on the fine leaf) L1/L2 + observed orders; Celik GCI_fine on Delta_L2 and Delta_L1."""
+area weighted on the fine leaf) L1/L2 + observed orders; Celik GCI_fine on Delta_L2 and Delta_L1.
+RUN   python table4_vares_convergence.py      (base env)      OUT  <data>/results/convergence_loglog/conv_table.json"""
 import os, sys, json
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(HERE))
+import paraboloid_dish_config as CFG
 import MeshStudy_paraboloid_vares_ckpt as CK
-import MeshStudy_paraboloid_vares as MS
+import vares_study as MS
 D = 5000.0
 
 def areas(P, T):
@@ -75,4 +78,7 @@ for j, nm in ((0, "L1"), (1, "L2")):
     print("Delta_%s: phi(50,25,12.5) = %.6f %.6f %.6f mm; %s; p = %.3f; ext %.6f mm; GCI_fine %.3e (%.2e mm); 100-chain h006 %.6f (vs ext %+.2e mm)" % (
         nm, f3, f2, f1, "monotone" if e32 * e21 > 0 else "oscillatory", p, ext, gci, gci * f1, x6["Delta"][j], x6["Delta"][j] - ext))
     print("   relative change successive: %s" % ["%.2e" % (abs(out[k + 1]["Delta_" + nm] - out[k]["Delta_" + nm]) / out[k + 1]["Delta_" + nm]) for k in range(4)])
-json.dump(out, open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "conv_table.json"), "w"), indent=1)
+OUT = os.path.join(CFG.TEMP_DIR, "results", "convergence_loglog", "conv_table.json")
+os.makedirs(os.path.dirname(OUT), exist_ok=True)
+json.dump(out, open(OUT, "w"), indent=1)
+print("[saved]", OUT)

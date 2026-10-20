@@ -26,7 +26,7 @@ def main():
     ap.add_argument("--procs", type=int, default=8)
     a = ap.parse_args()
     import MeshStudy_paraboloid_vares_ckpt as CK
-    import MeshStudy_paraboloid_vares as MS
+    import vares_study as MS
     import vares_sparse as VS
     import vares_roundoff as VR
     import vares_settings as S

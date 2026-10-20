@@ -1,17 +1,15 @@
-"""paraboloid_dish_config.py -- single source of truth for the paraboloid-dish pipeline.
+"""paraboloid_dish_config.py -- the one place where the paraboloid-dish pipeline is configured.
 
-Pure single-chamber paraboloid dish, rigid (pinned) tensioned rim, Chen-2022 NPL
-woven fabric, 24 gores, FLAT-facet Abaqus assembly (gores enter flat and
-unmodified; joining is a physical Assemble step).
+Single-chamber paraboloid dish, rigid (pinned) rim, Chen-2022 woven fabric, 24 gores that enter
+the Abaqus model flat and are dragged to shape (Sec. 3.4 of the paper).
 
 Units: N / mm / MPa / tonne (density tonne/mm^3), time s.
 
-Pipeline stages (see PARABOLOID_DISH_PIPELINE.md):
-  1. ParaboloidDish_pressure_JAXFDM.py        (jaxfdm env)  -> FORM_NPZ
-  2. paraboloid_profile.py                    (base env)    -> targets N_phi/N_theta
-  3. optimise_cutting_pattern_paraboloid_gore_chen.py (base) -> PAT_NPZ
-  4. make_paraboloid_facets.py + inflate_facet_paraboloid.py -> job decks
-  5. extract_paraboloid_odb.py (abaqus python) + compare_paraboloid_dish.py
+Pipeline (README.md):
+  1. formfinding/   ParaboloidDish_unstructured_JAXFDM.py (jax env)   -> form-found net, CST projection
+  2. vares/         paraboloid_profile_cst.py, MeshStudy_paraboloid_vares_ckpt.py (base env) -> cutting pattern
+  3. abaqus/        sector_seamtip_ladder.py, euler_abaqus_runner.py, abaqus_ladder_seamband.py -> verification
+  4. figures/       the figure and table scripts of the paper
 """
 import os
 import sys
@@ -56,11 +54,4 @@ CODE_FORMFINDING = os.path.join(HERE, "formfinding")
 FORM_NPZ = os.path.join(TEMP_DIR, "jaxfdm_paraboloid_dish.npz")
 
 # ---- artifacts ---------------------------------------------------------------------------
-PAT_NPZ    = os.path.join(TEMP_DIR, "cutting_pattern_paraboloid_chen.npz")
-FACET_NPZ  = os.path.join(TEMP_DIR, "facet_paraboloid_{variant}.npz")
-JOB_STEM   = "paraboloid_dish"                    # job dirs: paraboloid_dish_{vares,naive}
-ABAQUS_BAT = r"C:\SIMULIA\Commands\abaqus.bat"
-
-# NOTE (import hazard, documented in VARES_NPL_PROJECT_HANDOFF.md 9): never co-import the
-# LAMINA sibling optimise_cutting_pattern_npl_gore.py with any chen script -- it rebinds
-# vares_membrane.chen_stress_linear at import time.
+ABAQUS_BAT = os.environ.get("ABAQUS_CMD", r"C:\SIMULIA\Commands\abaqus.bat")   # Abaqus launcher on this machine

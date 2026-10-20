@@ -1,5 +1,5 @@
 r"""
-ParaboloidDish_unstructured_JAXFDM.py -- UNSTRUCTURED-MESH copy of ParaboloidDish_pressure_JAXFDM.py
+ParaboloidDish_unstructured_JAXFDM.py -- unstructured-mesh form finder of the paraboloid dish (developed from an earlier structured-mesh solver, not included)
 for the unstructured rungs of the paraboloid mesh study (MeshStudy_paraboloid_unstructured.py).
 
 WHAT DIFFERS FROM THE POLAR ORIGINAL (everything else -- constant-mass coupling, GAS_K calibration,
