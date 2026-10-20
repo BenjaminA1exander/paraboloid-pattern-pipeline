@@ -36,7 +36,7 @@ C       WRINKLED (SIG2 <= 0, EP1 > 0):    one principal stress
 C                compressive but at least one principal strain
 C                tensile.  Apply spectral regularisation
 C                S = S+ + n*S- (compressive principal stresses
-C                scaled by n=ETA_SL).
+C                scaled by n=ETA_SL). Not from roddenam but some other forgotten paper.
 C       SLACK    (SIG1 <= 0, EP1 <= 0):   no tensile stress and no
 C                tensile strain anywhere; regularised near-zero
 C                stress.
@@ -119,7 +119,7 @@ C     Wrinkling/slack residual stiffness fraction (tension-field
 C     regularisation).  Raised 1e-6 -> 1e-3: at 1e-6 a wrinkled element
 C     goes fully floppy, distorts in 3D and dumps its load onto the taut
 C     neighbour (the hot/cold pair at the wrinkle front); 1e-3 keeps a
-C     small restoring stiffness so the front stays smooth.
+C     small restoring stiffness so the front stays smooth. Only done for the finest element meshes, matters less for coarse fomrulations.
       PARAMETER (ETA_SL = 1.0D-3)
       PARAMETER (CVISC  = 0.01D0)
 C     Bulk viscosity fade window (uses STEPTIME). Full damping for
@@ -328,6 +328,8 @@ C       Damps rapid deformation to stabilise explicit integration.
 C       Faded out linearly between CVISC_FADE_T0 and CVISC_FADE_T1
 C       (both in step time, seconds) so it only acts during the
 C       loading transient and is removed before steady-state output.
+C       Must be phased out to ensure no random stresses appear.
+C       Treat wit caution, can cause other problems too, but useful when works.
 C       ============================================================
         IF (STEPTIME .LE. CVISC_FADE_T0) THEN
           CVISC_EFF = CVISC
@@ -412,6 +414,7 @@ C     response is non-positive (both branches invalid or both giving
 C     negative stress), fall back to a linear regularisation
 C     ETA_REG * a1 * ex (ETA_REG * b2 * ey) so the response stays
 C     smooth and small instead of clamping abruptly at zero.
+C     Was not discussed in original paper, but is considered a logical consequence.
 C
 C       Biaxial:   S_x = a1*ex + a2*ey + a3*ex^2 + a4*ey^2 + a5*ex*ey
 C                  S_y = b1*ex + b2*ey + b3*ex^2 + b4*ey^2 + b5*ex*ey
