@@ -3,13 +3,13 @@ ParaboloidDish_unstructured_JAXFDM.py -- unstructured-mesh form finder of the pa
 for the unstructured rungs of the paraboloid mesh study (MeshStudy_paraboloid_unstructured.py).
 
 WHAT DIFFERS FROM THE POLAR ORIGINAL (everything else -- constant-mass coupling, GAS_K calibration,
-Newton/SM adjoint, Sobolev L-BFGS, health gates, objective -- is the original code, unchanged):
+Newton/SM adjoint, L-BFGS, health gates, objective -- is the original code, unchanged):
 
   * Topology is READ from JAXFDM_MESH_NPZ (paraboloid_unstructured_mesh.py): a gmsh triangulation
     with every node on the target paraboloid, rim nodes pinned, one node at the apex.  The nodal
     targets (target_rho, target_z) are the seed positions, exactly as the polar builder sets them.
   * There are no rings, so "one q per hoop ring + one per meridional level" has no meaning.  Its
-    replacement keeps the same design dimension and the same Sobolev structure:
+    replacement keeps the same design dimension and the same station structure:
         q_e = q_m(s_e) cos^2(a_e) + q_h(s_e) sin^2(a_e)
     q_m(s), q_h(s): piecewise-linear profiles on JAXFDM_N_STATIONS stations equally spaced in
     meridian arc length s (apex -> rim);  s_e: arc length at the edge midpoint;  a_e: angle between
@@ -17,7 +17,8 @@ Newton/SM adjoint, Sobolev L-BFGS, health gates, objective -- is the original co
     M = diag(q_m, q_h) in the local (meridional, hoop) frame -- the general form that lets a
     triangulated net carry an anisotropic membrane stress.)  Both are frozen on the seed, so q(theta)
     is a fixed linear map of the station values and the gradient flows through it exactly.
-    Design variables are "mer@k" / "hoop@k", so the original H1 Sobolev preconditioner applies as is.
+    Design variables are "mer@k" / "hoop@k" (JAXFDM_Q_MODE=stations); the published runs use one design
+    variable per edge instead (JAXFDM_Q_MODE=edge).
   * JAXFDM_OBJECTIVE=normal replaces the nodal (rho, z)-to-seed fit by the normal distance to the
     paraboloid.  On an irregular net smooth q leaves an in-plane nodal imbalance, the nodes slide
     along the surface, and a nodal objective then drives q into a station-to-station zig-zag to
@@ -62,9 +63,8 @@ SOLUTION STRATEGY  (identical stack to AirfoilWing_pressure_JAXFDM.py)
     contraction-independent, so it converges genuine equilibria even at/past the FDM
     constant-mass fold (lambda_sym -> 1), where the damped Picard critically slows. The
     damped Picard is demoted to a drift/stability check.
-  * Sobolev-metric L-BFGS is the ONLY stepper: H0 = gamma*B^-1 (per-family screened
-    Laplacian) at the centre of the two-loop recursion -> mesh-independent descent, sharp
-    optimum features (rim/apex) stay reachable. Armijo line search on forward-only solves.
+  * L-BFGS is the ONLY stepper: H0 = gamma I at the centre of the two-loop recursion, Armijo
+    line search on forward-only solves.
   * The FDM tangent's constant-mass fold is a GEOMETRIC diagnostic, never a constraint:
     FDM omits the always-positive material stiffness EA, and the k=0 fold mode is the pure
     membrane-stretching mode a real material resists most -- a TRUE equilibrium past the FDM
@@ -202,7 +202,7 @@ MESH_CAP_A = float(os.environ.get("JAXFDM_MESH_CAP_A", "2.5"))
 MESH_CAP_S = float(os.environ.get("JAXFDM_MESH_CAP_S", "2.0"))
 assert OBJECTIVE in ("nodal", "normal"), OBJECTIVE
 
-# ---- Optimiser (Sobolev-metric L-BFGS) --------------------------------------------------
+# ---- Optimiser (L-BFGS) -----------------------------------------------------------------
 N_OUTER     = int(os.environ.get("JAXFDM_N_OUTER", "400"))
 LR          = float(os.environ.get("JAXFDM_LR", "0.02"))     # trust radius seed (log-q units)
 PATIENCE    = int(os.environ.get("JAXFDM_PATIENCE", "60"))
@@ -248,9 +248,6 @@ GK_MAX_FRAC    = 25.0
 # Unstructured: the reduction is the station-profile map (always on); the ring projectors are off.
 AXISYM_Q = True
 AXISYM_STATE_PROJECT = False
-
-# ---- Sobolev (H1) gradient preconditioner over the reduced q-profiles ------------------------
-SOBOLEV_ELL = float(os.environ.get("JAXFDM_SOBOLEV_ELL", "2.0"))
 
 # ---- L-BFGS knobs ----------------------------------------------------------------------------
 LBFGS_M      = int(os.environ.get("JAXFDM_LBFGS_M", "10"))
@@ -610,15 +607,15 @@ _NATIVE_MASS_DAMPED = _make_damped_picard(NATIVE_MASS_BETA)
 
 
 # =============================================================================
-# NATIVE constant-mass optimiser (Newton SM-adjoint forward + Sobolev L-BFGS)
+# NATIVE constant-mass optimiser (Newton SM-adjoint forward + L-BFGS)
 # =============================================================================
 
 def optimise_native_mass(topo, q_initial=None, coords_initial=None, stage_label="",
                          controls=None):
     """Constant-mass INSIDE jax: p = sign*GAS_K/V computed in the differentiated damped fixed
     point (ConstantMassModelSparse). NEWTON (sparse Sherman-Morrison) is the differentiable
-    forward via an SM-factored adjoint; damped Picard is the drift/stability check. Sobolev-
-    metric L-BFGS is the stepper. Returns a 12-tuple compatible with diagnostics/view."""
+    forward via an SM-factored adjoint; damped Picard is the drift/stability check. L-BFGS
+    is the stepper. Returns a 12-tuple compatible with diagnostics/view."""
     if controls is None:
         controls = _controls()
     N_OUTER_ = controls["N_OUTER"]
@@ -706,46 +703,11 @@ def optimise_native_mass(topo, q_initial=None, coords_initial=None, stage_label=
     _SOLVER = (_make_damped_picard(NATIVE_MASS_BETA, project=sweep_project)
                if sweep_project is not None else _NATIVE_MASS_DAMPED)
 
-    # ---- Sobolev (H1) preconditioner ---------------------------------------------------------
-    SOBOLEV_APPLY = None
-    if AXISYM_Q and SOBOLEV_ELL > 0.0:
-        def _fam_rows(fam):
-            pairs = sorted((int(n.split("@")[1]), k) for k, n in enumerate(GROUP_NAMES)
-                           if n.split("@")[0] == fam)
-            return np.asarray([k for _, k in pairs], dtype=int)
-
-        def _h1_inv(nn, ell):
-            D2 = np.zeros((nn, nn))
-            for i in range(nn):
-                if i > 0:
-                    D2[i, i - 1] = 1.0
-                if i + 1 < nn:
-                    D2[i, i + 1] = 1.0
-                D2[i, i] = -(int(i > 0) + int(i + 1 < nn))    # Neumann ends
-            return np.linalg.inv(np.eye(nn) - (ell ** 2) * D2)
-
-        _fam_blocks = [(rows, _h1_inv(rows.size, SOBOLEV_ELL))
-                       for rows in (_fam_rows("hoop"), _fam_rows("mer")) if rows.size >= 3]
-
-        def SOBOLEV_APPLY(g_np):
-            out = np.array(g_np, dtype=float, copy=True)
-            for rows, a_inv in _fam_blocks:
-                out[rows] = a_inv @ out[rows]
-            return out
-
-        print(f"[sobolev] H1 gradient preconditioner ACTIVE: ell={SOBOLEV_ELL:g} over "
-              f"{len(_fam_blocks)} profile families "
-              f"({'+'.join(str(rows.size) for rows, _ in _fam_blocks)} stations)", flush=True)
-
-    # ---- L-BFGS two-loop in the Sobolev metric -----------------------------------------------
-    def _sob_joint(v):
+    # ---- L-BFGS two-loop: H0 = gamma I (the gas-content variable, if optimised, has its own scale) ----
+    def _h0_apply(v):
         out = np.array(v, dtype=float, copy=True)
         if OPTIMISE_GAS_K:
-            if SOBOLEV_APPLY is not None:
-                out[:-1] = SOBOLEV_APPLY(out[:-1])
             out[-1] *= LBFGS_GK_H0
-        elif SOBOLEV_APPLY is not None:
-            out = SOBOLEV_APPLY(out)
         return out
 
     def _lbfgs_direction(g_now, pairs, scale0):
@@ -755,10 +717,10 @@ def optimise_native_mass(topo, q_initial=None, coords_initial=None, stage_label=
             a_i = rho_i * float(s_i @ q_)
             alphas.append(a_i)
             q_ -= a_i * y_i
-        r = _sob_joint(q_)
+        r = _h0_apply(q_)
         if pairs:
             s_l, y_l, _ = pairs[-1]
-            r *= float(s_l @ y_l) / max(float(y_l @ _sob_joint(y_l)), 1e-30)
+            r *= float(s_l @ y_l) / max(float(y_l @ _h0_apply(y_l)), 1e-30)
         else:
             r *= scale0 / max(float(np.abs(r).max()), 1e-30)
         for (s_i, y_i, rho_i), a_i in zip(pairs, reversed(alphas)):
@@ -1490,8 +1452,8 @@ def optimise_native_mass(topo, q_initial=None, coords_initial=None, stage_label=
               if OPTIMISE_GAS_K else np.array(LOG_LO_NP, dtype=float))
     _lb_hi = (np.concatenate([LOG_HI_NP, [float(np.asarray(log_gk_hi))]])
               if OPTIMISE_GAS_K else np.array(LOG_HI_NP, dtype=float))
-    print(f"[lbfgs] stepper: Sobolev-metric L-BFGS (H0=gamma*B^-1, m={LBFGS_M}); "
-          f"empty history = pure Sobolev descent", flush=True)
+    print(f"[lbfgs] stepper: L-BFGS (H0 = gamma I, m={LBFGS_M}); "
+          f"empty history = steepest descent", flush=True)
     collapse_z = NATIVE_COLLAPSE_FRAC * target_height
     _trace = os.environ.get("JAXFDM_TRACE") == "1"
     if _trace:
@@ -1751,7 +1713,7 @@ def optimise_native_mass(topo, q_initial=None, coords_initial=None, stage_label=
             break
         if gstep - last_improve >= PATIENCE_:
             break
-        # ---- parameter update: Sobolev-metric L-BFGS ----------------------------------------
+        # ---- parameter update: L-BFGS -------------------------------------------------------
         g_now = (np.concatenate([np.asarray(g, dtype=float), [float(g_gk)]])
                  if OPTIMISE_GAS_K else np.asarray(g, dtype=float).copy())
         x_now = (np.concatenate([np.asarray(theta, dtype=float),
@@ -1864,16 +1826,16 @@ def optimise_native_mass(topo, q_initial=None, coords_initial=None, stage_label=
         elif _lb_pairs:
             _lb_pairs = []
             print(f"[lbfgs] step {gstep:3d}: line search failed ({_ls_fail_txt(_ls_why)}) "
-                  f"-- history cleared, next step falls back to pure Sobolev descent",
+                  f"-- history cleared, next step falls back to steepest descent",
                   flush=True)
         else:
             if _gov_shrunk:
-                print(f"[lbfgs] step {gstep:3d}: Sobolev-descent line search failed "
+                print(f"[lbfgs] step {gstep:3d}: steepest-descent line search failed "
                       f"({_ls_fail_txt(_ls_why)}) -- governor already shrank lr, holding "
                       f"(lr={lr_cur:.5f})", flush=True)
             else:
                 lr_cur *= 0.5
-                print(f"[lbfgs] step {gstep:3d}: Sobolev-descent line search failed "
+                print(f"[lbfgs] step {gstep:3d}: steepest-descent line search failed "
                       f"({_ls_fail_txt(_ls_why)}) -- trust cap halved (lr={lr_cur:.5f})",
                       flush=True)
                 if lr_cur < 1e-4:
