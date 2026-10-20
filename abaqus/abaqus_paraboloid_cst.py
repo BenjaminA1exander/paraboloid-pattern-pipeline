@@ -3,6 +3,7 @@ r"""abaqus_paraboloid_cst.py -- Abaqus/Explicit validation of a CST-target VaReS
 
     vares    X_converged             the converged VaReS pattern of that rung
     naive    X_leaf                  the developed leaf, no compensation (unoptimised)
+    was not included in the paper as no real point and ran out of time.
     uniform  X_leaf x (1+c_m, 1+c_w) one constant warp and one constant weft shrinkage over the
                                      whole gore: the best guess WITHOUT an optimiser (below)
 
@@ -85,7 +86,7 @@ ALPHA_REF = IC.ALPHA_DAMP                             # 40, validated on the ref
 REF_FLOWER = os.path.join(HERE, "flower_paraboloid_vares.npz")
 LINE_TOL = 1.0                                        # mm, as make_paraboloid_flower
 CPUS = 6
-MIN_FREE_GB = 8.0                                     # refuse to start a job below this
+MIN_FREE_GB = 8.0                                     # refuse to start a job below this, laptop will crash.
 RF_OK = 0.98                                          # sum RF3 / applied needed to pass
 RF_DRIFT_OK = 1e-3                                    # |RF3 change| / applied over the last 10 s
 IE_DRIFT_OK = 5e-4                                    # |ALLIE change| / ALLIE over the last 10 s
