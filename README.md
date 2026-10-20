@@ -27,15 +27,26 @@ pneumatic-cap verification (Sec. 2 and 3.1).
 ## Origin of the VaReS implementation
 
 The cutting-pattern stage is inspired by the Variation of Reference Strategy (VaReS) of
-Armin Widhammer's doctoral thesis, *Variation of Reference Strategy: Generation of Optimized
-Cutting Patterns for Textile Fabrics* (Technische Universität München, Chair of Structural
-Analysis, 2015). The code in `vares/` is a completely independent implementation written
+Armin Michael Widhammer's doctoral thesis, *Variation of Reference Strategy* (Technische
+Universität München, 2015, https://mediatum.ub.tum.de/1256255). The code in `vares/` is a
+completely independent implementation written
 by the author of the paper from the published formulation: no code, data or material from
 TU Munich was used, and this repository claims no affiliation with TU Munich or with the
 authors of the original method. Where the formulation follows the thesis (the variational
 residual of the induced stress with respect to the planar reference configuration, Ch. 5.2),
 the module docstrings say so; the material law, the element, the solver, the nested gore
 meshes and the convergence study are this work's own.
+
+```bibtex
+@phdthesis{Widhammer2015,
+  author = {Widhammer, Armin Michael},
+  title  = {Variation of Reference Strategy},
+  school = {Technische Universit{\"a}t M{\"u}nchen},
+  year   = {2015},
+  pages  = {212},
+  url    = {https://mediatum.ub.tum.de/1256255}
+}
+```
 
 ## Layout
 

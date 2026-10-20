@@ -5,9 +5,9 @@ VaReS (Variation of Reference Strategy) cutting-pattern membrane element,
 driving the INDUCED contravariant 2nd Piola-Kirchhoff stress to a
 prescribed target by varying the planar material configuration X.
 
-The formulation follows Ch. 5.2 of A. Widhammer, "Variation of Reference
-Strategy: Generation of Optimized Cutting Patterns for Textile Fabrics",
-Dissertation, Technische Universitaet Muenchen, 2015. This module is an
+The formulation follows Ch. 5.2 of A. M. Widhammer, "Variation of Reference
+Strategy", Dissertation, Technische Universitaet Muenchen, 2015,
+https://mediatum.ub.tum.de/1256255. This module is an
 independent implementation written from that published description; no
 code or material from TU Munich was used and no affiliation is claimed.
 
