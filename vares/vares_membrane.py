@@ -1,10 +1,15 @@
 """
 vares_membrane.py
 
-VaReS (Variation of Reference Strategy, Widhammer 2015 Ch. 5.2)
-cutting-pattern membrane element, driving the INDUCED contravariant
-2nd Piola-Kirchhoff stress to a prescribed target by varying the
-planar material configuration X.
+VaReS (Variation of Reference Strategy) cutting-pattern membrane element,
+driving the INDUCED contravariant 2nd Piola-Kirchhoff stress to a
+prescribed target by varying the planar material configuration X.
+
+The formulation follows Ch. 5.2 of A. Widhammer, "Variation of Reference
+Strategy: Generation of Optimized Cutting Patterns for Textile Fabrics",
+Dissertation, Technische Universitaet Muenchen, 2015. This module is an
+independent implementation written from that published description; no
+code or material from TU Munich was used and no affiliation is claimed.
 
 The element shape is dispatched per element from its node count
 (element_types.element_type_of): 4-node bilinear quad (QUAD4) or
