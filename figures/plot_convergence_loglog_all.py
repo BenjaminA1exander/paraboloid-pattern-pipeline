@@ -14,11 +14,11 @@ the two finest rungs, p = -2 x slope, is printed for every series.
       exact statics.  Source: table3_formfinding.score_cached on the Table 3 states (L0-L2 after stage 2,
       L3 after stage 3).
   (d) Sec. 3.4.2, Table 4 / Fig. 8(c): VaReS cutting pattern on the nested gore chain: |Delta/Delta_inf - 1| (Delta_inf
-      the Celik extrapolation of the three finest), the successive pattern change delta X (L1, L2, % of Delta_inf),
+      the celik GCI extrapolation of the three finest), the successive pattern change delta X (L1, L2, % of Delta_inf),
       and the stress mismatch e_sigma minus its extrapolated limit.  Source: results/convergence_loglog/conv_table.json
       (the Table 4 script) and Table 4 (e_sigma).
   (e) Sec. 3.4.3, Table 5 / Fig. 9(d): Abaqus/Explicit inflation, warp and weft resultant deviations (L1, L2) of the
-      VaReS and the uniform-shrinkage pattern, |f - f_inf| / f_inf with f_inf the Celik limit of the three finest.
+      VaReS and the uniform-shrinkage pattern, |f - f_inf| / f_inf with f_inf the Celik GCI limit of the three finest.
       Source: results/abaqus_ladder_seamtip/vares_vs_uniform/vu_summary.json.
 
 Run (base env): python plot_convergence_loglog_all.py
