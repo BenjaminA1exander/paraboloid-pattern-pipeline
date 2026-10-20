@@ -128,17 +128,17 @@ elements, with O(h) and O(h^2) slope guides, and prints the observed orders
 
 ## Data
 
-`data/` (26 MB) holds what the chain is built on and what the tables are read from:
+`data/` (33 MB) holds what the chain is built on and what the tables are read from:
 
 | folder | content |
 |---|---|
 | `paraboloid_mesh_odt`, `paraboloid_mesh_nested` | the 289-node base mesh and the nested L0-L3 meshes |
-| `paraboloid_edge_constq_nest*` | stage-2 run records (mesh, history, environment) of L0-L2 and the L0 stage-3 record |
+| `paraboloid_edge_constq_nest*` | stage-2 run records (mesh, history, environment) of L0-L2; `*_stage3_curv`: the stage-3 records of L0-L2 and the final states of L1 and L2 (`docs/RECIPES.md`, stage 1) |
 | `paraboloid_edge_constq_u4626_odt_qual1e-4_warm` | the CST-projected form-found net the VaReS target is extracted from |
 | `meshstudy_vares_cst/target_grid.npz` | the cached target stress grid (s, eta) |
 | `gore_nested_cstraw_tippolar210c200` | the nested gore meshes of the 200 mm chain (G0-G4 of Table 4) |
 | `meshstudy_vares_cstraw_tippolar210c200nestgrade` | the converged patterns of that chain; `..._tippolar210nestgrade/h100` the seed of its base rung |
-| `rim_onsurface_verify`, `results/` | the json caches behind Tables 3, 4 and 5 |
+| `rim_onsurface_verify`, `results/` | the json caches behind Tables 3, 4 and 5; `stage3_all_rungs_scores.json`: the Table 3 measures of the stage-2 and stage-3 state of every rung |
 
 Not shipped (sizes): the form-found L3 state and its checkpoints, the 6.25 mm VaReS pattern
 (15 MB), the seam/tip Abaqus meshes (144 MB) and the Abaqus results (hundreds of GB on

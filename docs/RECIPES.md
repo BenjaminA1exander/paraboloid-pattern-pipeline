@@ -24,7 +24,8 @@ Three stages per mesh, all `ParaboloidDish_unstructured_JAXFDM.py` with
 `w = mean(d^2) / mean(e^2)` at the stage-2 state (d the normal offset, e the curvature measure
 of Eq. 27 over the free nodes): L0 2.0710e-4, L1 5.5440e-6, L2 7.4416e-7, L3 1.237e-7
 (L3 at the resumed iterate). Full environment: `data/paraboloid_edge_constq_nest289_stage3_curv/run_env.txt`
-(laptop) and `formfinding/nest4321_stage3.sbatch` (Euler). The stage-2 environment of every
+(laptop) and `formfinding/nest4321_stage3_sm.sbatch` (Euler; `CODE` there is the cluster
+checkout of `formfinding/`, `SRC` the rung's stage-2 folder). The stage-2 environment of every
 rung is in `data/paraboloid_edge_constq_nest*/run_env.txt`.
 
 Gradient path: the solver differentiates its Newton equilibrium through a Sherman-Morrison adjoint and
@@ -38,6 +39,29 @@ stage 3 re-run with the switch (laptop, 2026-10-19) ends at the same state as th
 Drivers: `run_paraboloid_unstr_ladder.py` (stages 1-2), `run_stage3_local.py` (stage 3,
 laptop), `euler_nest_stage3.py` with `nest4321_stage3.sbatch` (stage 3, Euler), followed by
 `project_self_stress.py` and `project_self_stress_cst.py` (Eq. 28, nu = 0.3).
+
+Stage 3 on every rung (L1 and L2 run on Euler on 2026-10-19/20, jobs 17524198 and 17527474;
+records and final states in `data/paraboloid_edge_constq_nest{1105,4321}_stage3_curv`, scores
+of all eight states in `data/rim_onsurface_verify/stage3_all_rungs_scores.json`, computed with
+the Table 3 recovery). Stage 3 ends at an objective of round-off size on every rung (L0 1.5e-20
+after 1410 steps, L1 9e-20 after 11384, L2 3e-18 after 38639) with the surface error at the
+faceting floor (0.999 x floor), as stage 2 did. What it changes is where the nodes sit on that
+surface: the normal distance of the free nodes drops from 1e-6 R to 1e-10 R, and the nodes
+slide tangentially, on L0 by 3e-5 R at most, on L1 by 1.8e-3 R (0.03 h, near the rim), on L2
+by 1.1e-2 R (0.35 h, within 0.08 R of the apex, where the force densities change by up to 80 %).
+The recovered resultants, area-weighted L1 and L2 of N/N_exact - 1 in %:
+
+| rung | state | N_phi L1 | N_phi L2 | N_theta L1 | N_theta L2 |
+|---|---|---|---|---|---|
+| L0 | stage 2 / stage 3 | 0.252 / 0.252 | 0.317 / 0.317 | 0.927 / 0.927 | 1.024 / 1.024 |
+| L1 | stage 2 / stage 3 | 0.127 / 0.125 | 0.179 / 0.171 | 0.211 / 0.212 | 0.243 / 0.244 |
+| L2 | stage 2 / stage 3 | 0.065 / 0.063 | 0.097 / 0.095 | 0.065 / 0.054 | 0.086 / 0.066 |
+| L3 | stage 2 / stage 3 | 0.054 / 0.034 | 0.091 / 0.059 | 0.271 / 0.019 | 0.731 / 0.027 |
+
+(L3 stage 2 is the unconverged 12251-step state; its stage 3 is the published L3 row of
+Table 3.) With stage 3 on all rungs the observed orders between successive rungs are
+N_phi 1.0, 1.0, 0.9 (L1 norm) and N_theta 2.1, 2.0, 1.5 (L1), 2.1, 1.9, 1.3 (L2); Table 3
+of the submitted draft (stage 2 on L0-L2) gives N_theta 2.1, 1.7, 1.8.
 
 Recovery (Eq. 29-30): nodal virial from the CST-projected edge forces, quadratic moving least
 squares with Gaussian weights, support rho = 8 h_ref sqrt(h/h_ref), h_ref = 159 mm

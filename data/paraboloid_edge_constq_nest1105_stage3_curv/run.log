@@ -1,0 +1,161 @@
+[scatter-patch] JAXFDM_SCATTER_COMPACT: structure tables built sparse (no dense E x N, N x N, F x N, E x F)
+[scatter-patch] dense connectivity -> matrix-free gather/scatter (active)
+[orient] re-wound 0/2112 triangles to the outward (n_z>0) side
+Target: paraboloid dish  z = 1.5 * (1 - (r/3.0)^2)  -> apex z=1.5, focal length f=1.5000 (f/D=0.250)
+Mesh: 1105 nodes, 3216 edges, 2112 tris, 1009 free
+3216 per-edge variables; edges by role: {'hoop': 1496, 'mer': 1720}
+[stations] q reparametrised: 3216 edges -> 3216 profile variables (25 meridional + 25 hoop stations, ds=0.1435); edge direction split: mean cos^2 a = 0.501
+[sobolev] H1 gradient preconditioner ACTIVE: ell=2 over 0 profile families ( stations)
+[curv] curvature-sensitive shape term ACTIVE: W_CURV=5.544e-06 over 1008 shape nodes
+[edge q] 3216 per-edge variables, const seed: min 1.000 median 1.000 max 1.000
+
+==============================================================================
+[stage:native_mass] Paraboloid dish fit (native constant-mass Newton adjoint)
+==============================================================================
+[native_mass setup] sign +1 inflates (apex +1:0.845 -1:-0.845); target apex z=1.500
+[native_mass calibrate] GAS_K=22.6095 sign=+1 -> apex_z=1.5526 V=23.8933 (target 1.5000)
+[warm] $SCRATCH/jaxfdm/nest1105/stage2/jaxfdm_paraboloid_dish.npz: per-edge q + equilibrium adopted (GAS_K 22.609481 matches); L-BFGS memory starts empty under objective 'normal'
+[native_mass baseline] 3216 design vars over 3216 edges (3216 skin) -> obj=0.000000 surfRMS=0.00570 max|d|=0.03022 apex_z=1.5000
+[newton] Newton refinement ACTIVE (3027 dof, linsolve=sparse Sherman-Morrison, gradient=SM-adjoint (Newton IS the differentiable forward))
+[lbfgs] stepper: Sobolev-metric L-BFGS (H0=gamma*B^-1, m=50); empty history = pure Sobolev descent
+[stab] baseline: Pi=9.9025 lambda_full=0.4232 mu_damped=0.7116
+[newton grad] SM adjoint cross-check vs damped (stable seed): cos=0.834668 -- FALLING BACK to damped vg
+[newton] SM split verification: |J_sm v - J v|/|J v| = 2.00e-16 OK
+[stab] step 100: Pi=9.9027 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.1053
+[stab] step 200: Pi=9.9032 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.1481
+[stab] step 300: Pi=9.9016 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 400: Pi=9.9005 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 500: Pi=9.9002 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 600: Pi=9.8989 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0481
+[stab] step 700: Pi=9.8985 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 800: Pi=9.8991 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 900: Pi=9.8982 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 1000: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 1100: Pi=9.8989 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 1200: Pi=9.8990 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 1300: Pi=9.8988 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 1400: Pi=9.8985 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 1500: Pi=9.8988 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 1600: Pi=9.8988 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 1700: Pi=9.8991 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 1800: Pi=9.8989 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 1900: Pi=9.8988 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 2000: Pi=9.8988 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 2100: Pi=9.8987 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 2200: Pi=9.8990 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 2300: Pi=9.8989 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 2400: Pi=9.8989 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 2500: Pi=9.8988 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 2600: Pi=9.8987 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 2700: Pi=9.8987 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 2800: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 2900: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 3000: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 3100: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 3200: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 3300: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 3400: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 3500: Pi=9.8985 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 3600: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 3700: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 3800: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 3900: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 4000: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 4100: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 4200: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 4300: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 4400: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 4500: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 4600: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 4700: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 4800: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 4900: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 5000: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 5100: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 5200: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 5300: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 5400: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 5500: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 5600: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 5700: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 5800: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 5900: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 6000: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 6100: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 6200: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 6300: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 6400: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 6500: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 6600: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 6700: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 6800: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 6900: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 7000: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 7100: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 7200: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 7300: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 7400: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 7500: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 7600: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 7700: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 7800: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 7900: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 8000: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 8100: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 8200: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 8300: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 8400: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 8500: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 8600: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 8700: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 8800: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 8900: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 9000: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 9100: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 9200: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 9300: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 9400: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 9500: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 9600: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 9700: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 9800: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 9900: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 10000: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 10100: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 10200: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 10300: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 10400: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 10500: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 10600: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 10700: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 10800: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 10900: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 11000: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 11100: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 11200: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[stab] step 11300: Pi=9.8986 lambda_full=0.4232 lambda_sym=nan lambda_excited=0.0000
+[lbfgs] step 11374: line search failed (ascent x1, armijo x23) -- history cleared, next step falls back to pure Sobolev descent
+[lbfgs] step 11375: Sobolev-descent line search failed (armijo x24) -- trust cap halved (lr=0.01000)
+[lbfgs] step 11376: Sobolev-descent line search failed (armijo x24) -- trust cap halved (lr=0.00575)
+[lbfgs] step 11377: Sobolev-descent line search failed (armijo x24) -- trust cap halved (lr=0.00331)
+[lbfgs] step 11378: Sobolev-descent line search failed (armijo x24) -- trust cap halved (lr=0.00190)
+[lbfgs] step 11379: Sobolev-descent line search failed (armijo x24) -- trust cap halved (lr=0.00109)
+[lbfgs] step 11380: Sobolev-descent line search failed (armijo x24) -- trust cap halved (lr=0.00063)
+[lbfgs] step 11381: Sobolev-descent line search failed (armijo x24) -- trust cap halved (lr=0.00036)
+[lbfgs] step 11382: Sobolev-descent line search failed (armijo x24) -- trust cap halved (lr=0.00021)
+[lbfgs] step 11383: Sobolev-descent line search failed (armijo x24) -- trust cap halved (lr=0.00012)
+[lbfgs] step 11384: Sobolev-descent line search failed (armijo x24) -- trust cap halved (lr=0.00007)
+[newton polish] best x*: force residual -> 9.05e-16 in 0 Newton iters; obj 0.000000 -> 0.000000 apex 1.5000
+[native_mass verify] native coupled re-solve at best x*: drift=4.26e-16 apex_z=1.5000 V=21.1677 (settled apex_z=1.5000 V=21.1677)
+[native_mass optimise] 11384 steps (0 rejects); best obj=0.000000, final obj=0.000000, surfRMS=0.00571, max|d|=0.03050, apex_z=1.5000
+[native_mass gas_k] GAS_K=22.6095 calibrated then held FIXED
+[native_mass time] 4314.8 s for 11384 steps (379.0 ms/step incl. first-call compile)
+
+[result:Paraboloid dish] 3216 per-edge force-density variables, optimised q by role:
+   mer          n=1720   q: min=  0.388  mean=  1.084  max=  2.237
+   hoop         n=1496   q: min=  0.544  mean=  1.603  max=  3.184
+[result] surface RMS 0.00570 -> 0.00571   max|d|=0.03050   apex_z=1.5000  (target DEPTH=1.5, f=1.500)
+[result] plots + npz saved to $SCRATCH/jaxfdm/stage3/nest1105
+
+[done] paraboloid dish fit complete.
+[jax_fdm] WARNING: adjoint linear solve did NOT converge in 2 of 2 solves (worst residual 5.967e-02 vs tolerance 1.0e-04; failures between solve #1 and #2)

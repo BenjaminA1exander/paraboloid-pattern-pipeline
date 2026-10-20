@@ -13,7 +13,8 @@ same equilibrium / convergence printout as run_queue.
 
 USAGE  python hold_ext.py --rung 17.7 --variant naive      # one rung/variant
        python hold_ext.py --queue                           # all ladder rungs, as their prs finish,
-                                                            # until ladder_par.py logs 'all chains done'
+                                                            # until the ladder driver logs 'all chains done'
+                                                            # in night.log next to this file
 """
 import argparse
 import glob
@@ -25,18 +26,17 @@ import numpy as np
 import psutil
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-BASIC = os.path.normpath(os.path.join(HERE, "..", "..", "01_tutorials", "basic_examples"))
-sys.path.insert(0, BASIC)
-os.chdir(BASIC)
+sys.path.insert(0, HERE)
+os.chdir(HERE)                      # the deck module resolves its folders relative to the working directory
 import abaqus_paraboloid_cst as A   # noqa: E402
 
 CPUS, DOMAINS = 2, 6
 PRS_HOLD_STEP = 7                   # asm Drag, Settle = 1, 2 ; prs Press1-4 = 3-6, Hold = 7
 CREEP_MAX = 1.0                     # mm per 30 s (last hold interval, any node)
 EXT_TIME = 120.0
-MAX_EXT = 5                         # raised from 3 at 04:43: the naive apex decays slower on coarser rungs
+MAX_EXT = 5                         # the naive apex decays slower on the coarser rungs than 3 extensions allow
 NIGHT_LOG = os.path.join(HERE, "night.log")
-SUFFIX = ""                         # --suffix _dp: the double-precision ladder folders (06:40)
+SUFFIX = ""                         # --suffix _dp: the double-precision ladder folders
 
 
 def chain(v):
@@ -47,8 +47,8 @@ def chain(v):
 
 def ext_time(npz, t_default):
     """Hold time that the observed geometric decay of the last two 30 s intervals needs to bring the
-    interval motion under 0.8 CREEP_MAX, clipped to [120, 600] s (05:36: licence waits of ~20 min per
-    checkout made 120 s chunks the bottleneck).  Falls back to t_default if it is not decaying."""
+    interval motion under 0.8 CREEP_MAX, clipped to [120, 600] s (licence waits of about 20 min per
+    checkout make 120 s chunks the bottleneck).  Falls back to t_default if it is not decaying."""
     r = np.load(npz, allow_pickle=True)
     fc = r["frame_coord"].astype(float)
     if len(fc) < 3:
@@ -141,8 +141,8 @@ def extend(h, v, t=EXT_TIME):
 
 
 def release(jd):
-    """Remove the claim; another worker may be reading it this instant (Windows: WinError 32 killed two
-    workers on 2026-10-06), so retry briefly."""
+    """Remove the claim; another worker may be reading it this instant (Windows then raises a sharing
+    violation), so retry briefly."""
     p = os.path.join(jd, "hold_ext.claim")
     for _ in range(40):
         try:
@@ -194,8 +194,7 @@ def queue():
     A.log(A.ROOT, f"[hold_ext{SUFFIX}] queue start: {len(todo)} rung/variants, creep limit {CREEP_MAX} mm / 30 s")
     while todo:
         for hv in list(todo):
-            # a rung the scheduler has not built yet is WAITED for, not dropped (2026-10-06: workers
-            # started 06:37 dropped every rung <= 50 mm, so 35.4 mm naive sat unextended 09:47-10:56)
+            # a rung the scheduler has not built yet is waited for, not dropped
             if not os.path.exists(os.path.join(A.rung_dir(hv[0]), f"setup{SUFFIX}.json")):
                 continue
             try:

@@ -1,0 +1,10 @@
+[cst] n_tri: 8448
+[cst] n_sigma: 25344
+[cst] n_eq: 12387
+[cst] nu: 0.3
+[cst] eq_residual_rel: 9.034626688756324e-11
+[cst] dq_rel_rms: 0.07380027723101912
+[cst] q_min: 0.07568583230695869
+[cst] n_negative: 0
+[cst] rim_chords: 192
+[cst] saved $SCRATCH/jaxfdm/stage3/nest4321_sm/jaxfdm_paraboloid_dish_projected_cst.npz

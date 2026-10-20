@@ -1,0 +1,10 @@
+[project] n_edges_active: 12576
+[project] n_eq: 12387
+[project] eq_residual_rel: 1.1594865971814403e-13
+[project] rough_before: 2.5465991095323917
+[project] rough_after: 2.454621082726822
+[project] dq_rel_rms: 0.029350606644857852
+[project] q_min: 0.09548169406207761
+[project] n_negative: 0
+[project] seconds: 1.2280162149691023
+[project] saved $SCRATCH/jaxfdm/stage3/nest4321_sm/jaxfdm_paraboloid_dish_projected.npz

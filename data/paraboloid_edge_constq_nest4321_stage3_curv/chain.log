@@ -1,0 +1,5 @@
+[2026-10-19 17:12:30] job 17527474 on <node> (AMD EPYC 7763 64-Core Processor)
+2026-10-19 17:12:30 stage 3 start (warm from $SCRATCH/jaxfdm/nest4321/stage2/jaxfdm_paraboloid_dish.npz), W_CURV 7.4416e-7, on <node>
+2026-10-20 04:36:31 solver exited 0; step 38639: surf 0.9991 x floor (change 0.000%), obj 3.373e-18 (change 47.65%)
+2026-10-20 04:36:31 solver ended on its own rule (not the stop rule); projections run anyway -- inspect run.log
+2026-10-20 04:36:36 CST projection exited 0; DONE
