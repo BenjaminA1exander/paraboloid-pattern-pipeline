@@ -35,7 +35,7 @@ TU Munich was used, and this repository claims no affiliation with TU Munich or 
 authors of the original method. Where the formulation follows the thesis (the variational
 residual of the induced stress with respect to the planar reference configuration, Ch. 5.2),
 the module docstrings say so; the material law, the element, the solver, the nested gore
-meshes and the convergence study are this work's own.
+meshes and the convergence study are this work's own or based on other papers, such as Chen et al.
 
 ```bibtex
 @phdthesis{Widhammer2015,
