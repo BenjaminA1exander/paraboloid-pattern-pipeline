@@ -81,7 +81,7 @@ first. `PIPELINE_DATA` points at the data root (default `data/`).
 
 `paraboloid_dish_config.PY_BASE` / `PY_JAX` name the two interpreters for the drivers that
 start the solver as a subprocess (`PIPELINE_PY_BASE`, `PIPELINE_PY_JAX`).
-`ABAQUS_CMD` names the Abaqus launcher for the deck drivers (default `C:\SIMULIA\Commandsbaqus.bat`).
+`ABAQUS_CMD` names the Abaqus launcher for the deck drivers (default `C:\SIMULIA\Commands\abaqus.bat`).
 
 ## Stage 1: form finding (`formfinding/`)
 

@@ -360,7 +360,7 @@ def check(g, stem="fig_paraboloid_cst_target_check"):
     ax[2].set_xlabel(r"Across gore, $\eta$")
     ax[2].set_ylabel("Meridian arc from rim, $s$ (m)")
     cb = fig.colorbar(im, ax=ax[2])
-    cb.set_label(r"max($|arepsilon_{N_phi}|, |arepsilon_{N_	heta}|$) (%)")
+    cb.set_label(r"max($|\varepsilon_{N_\phi}|, |\varepsilon_{N_\theta}|$) (%)")
     for a, l in zip(ax, "abc"):
         a.text(-0.02, 1.04, f"({l})", transform=a.transAxes, ha="right", fontsize=9)
     fig.tight_layout(w_pad=1.5)
