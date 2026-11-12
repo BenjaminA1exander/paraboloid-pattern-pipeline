@@ -1,0 +1,24 @@
+      uniform $p_f$ vs analytic                        last-pair order  1.99   least-squares order  1.97
+      uniform $z_f$ vs analytic                        last-pair order  2.00   least-squares order  1.97
+      uniform $\tilde\lambda_{\min}$ vs 1/192          last-pair order  2.31   least-squares order  2.04
+      zoned $p_f$ vs 1/192                             last-pair order  1.60   least-squares order  1.04
+      zoned $z_f$ vs 1/192                             last-pair order  2.23   least-squares order  2.06
+      zoned $\tilde\lambda_{\min}$ vs 1/192            last-pair order  1.71   least-squares order  1.40
+      surface error $e_s/D$                            last-pair order  2.01   least-squares order  1.97
+      enclosed-volume error                            last-pair order  1.99   least-squares order  1.96
+      $N_\phi$, $\|e\|_1$                              last-pair order  0.92   least-squares order  0.94
+      $N_\phi$, $\|e\|_2$                              last-pair order  0.72   least-squares order  0.80
+      $N_\theta$, $\|e\|_1$                            last-pair order  1.79   least-squares order  1.82
+      $N_\theta$, $\|e\|_2$                            last-pair order  1.69   least-squares order  1.70
+      $|\Delta/\Delta_\infty - 1|$ (%)                 last-pair order  2.83   least-squares order  2.79
+      successive change $\|\delta X\|_1$ (% of $\Delta_\infty$) last-pair order  2.02   least-squares order  2.08
+      successive change $\|\delta X\|_2$ (% of $\Delta_\infty$) last-pair order  1.96   least-squares order  2.04
+      $|e_\sigma - e_{\sigma,\infty}|$ (%), $e_{\sigma,\infty}$ = 1.71 % last-pair order  1.80   least-squares order  1.68
+      vares warp L1 (p = 1.34)                         last-pair order  1.34   least-squares order  1.27
+      vares weft L1 (p = 1.56)                         last-pair order  1.56   least-squares order  1.44
+      vares warp L2 (p = 1.69)                         last-pair order  1.69   least-squares order  1.64
+      vares weft L2 (p = 1.38)                         last-pair order  1.38   least-squares order  1.29
+      uniform warp L1 (p = 1.94)                       last-pair order  1.94   least-squares order  1.95
+      uniform weft L1 (p = 1.92)                       last-pair order  1.92   least-squares order  1.74
+      uniform warp L2 (p = 1.70)                       last-pair order  1.70   least-squares order  1.66
+      uniform weft L2 (p = 1.80)                       last-pair order  1.80   least-squares order  1.73
