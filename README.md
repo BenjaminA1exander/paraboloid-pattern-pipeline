@@ -200,3 +200,7 @@ published results. The numerical code is unchanged: the VaReS core (`element_typ
 rule and flattening seed. The consolidation is protected
 by the regression test above (same 11 Newton iterations, converged pattern identical to
 round-off) and by `vares/validate_vares_sparse.py`.
+
+## Licence
+
+MIT, see `LICENSE`.
