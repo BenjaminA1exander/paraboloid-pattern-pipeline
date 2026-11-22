@@ -197,7 +197,6 @@ This repository is the organised, path-independent copy of the scripts that prod
 published results. The numerical code is unchanged: the VaReS core (`element_types.py`,
 `element_kinematics.py`, `vares_kinematics.py`, `vares_membrane.py`, `vares_sparse.py`,
 `vares_roundoff.py`) now also carries the shape functions, metrics, solver constants, pin
-rule and flattening seed that the worker used to import from the earlier airship-envelope
-modules (those modules are not part of this repository). The consolidation is protected
+rule and flattening seed. The consolidation is protected
 by the regression test above (same 11 Newton iterations, converged pattern identical to
 round-off) and by `vares/validate_vares_sparse.py`.
